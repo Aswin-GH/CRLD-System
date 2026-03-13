@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRLD System Map — Layers 00→02</title>
+<style>
+  :root {
+    /* Layer color palette — cascade anchoring */
+    --L0: #6366f1;      /* Philosophy — Indigo */
+    --L0-light: #e0e7ff;
+    --L0-mid: #a5b4fc;
+    --L0-bg: #eef2ff;
+    --L1: #0891b2;      /* Rulebook — Cyan */
+    --L1-light: #cffafe;
+    --L1-mid: #67e8f9;
+    --L1-bg: #ecfeff;
+    --L2R: #e11d48;     /* Engines Review — Rose */
+    --L2R-light: #ffe4e6;
+    --L2R-mid: #fda4af;
+    --L2R-bg: #fff1f2;
+    --L2B: #059669;     /* Engines Build — Emerald */
+    --L2B-light: #d1fae5;
+    --L2B-mid: #6ee7b7;
+    --L2B-bg: #ecfdf5;
+    --L2U: #d97706;     /* Engines Upstream — Amber */
+    --L2U-light: #fef3c7;
+    --L2U-mid: #fcd34d;
+    --L2U-bg: #fffbeb;
+    /* Deferred — Grey */
+    --DEF: #6b7280;
+    --DEF-light: #e5e7eb;
+    --DEF-bg: #f9fafb;
+    /* Artifact colors */
+    --ART-research: #f59e0b;
+    --ART-design: #8b5cf6;
+    --ART-output: #10b981;
+    --ART-ledger: #ef4444;
+    /* Agent colors */
+    --AG-ped: #dc2626;
+    --AG-id: #2563eb;
+    --AG-vd: #7c3aed;
+    --AG-tea: #059669;
+    --AG-ddd: #d97706;
+    --AG-loc: #0891b2;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+  /* Navigation */
+  .nav { display:flex; gap:2px; background:#1e293b; padding:8px 16px; position:sticky; top:0; z-index:100; border-bottom:2px solid #334155; flex-wrap:wrap; }
+  .nav-btn { padding:10px 18px; border:none; background:#334155; color:#94a3b8; cursor:pointer; font-size:13px; font-weight:600; border-radius:6px; transition:all .2s; letter-spacing:.3px; }
+  .nav-btn:hover { background:#475569; color:#e2e8f0; }
+  .nav-btn.active { color:#fff; }
+  .nav-btn[data-tab="overview"].active { background:var(--L0); }
+  .nav-btn[data-tab="documents"].active { background:var(--L1); }
+  .nav-btn[data-tab="artifacts"].active { background:var(--L2U); }
+  .nav-btn[data-tab="agents"].active { background:var(--L2R); }
+  .nav-btn[data-tab="cascade"].active { background:var(--L2B); }
+  .nav-btn[data-tab="deferred"].active { background:var(--DEF); }
+
+  /* Tab panels */
+  .panel { display:none; padding:24px; max-width:1400px; margin:0 auto; }
+  .panel.active { display:block; }
+
+  h1 { font-size:28px; margin-bottom:6px; }
+  h2 { font-size:20px; margin:24px 0 12px; }
+  h3 { font-size:15px; margin:16px 0 8px; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; }
+  .subtitle { color:#94a3b8; font-size:14px; margin-bottom:24px; }
+
+  /* Legend */
+  .legend { display:flex; gap:16px; flex-wrap:wrap; margin:16px 0 24px; padding:12px 16px; background:#1e293b; border-radius:8px; }
+  .legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color:#cbd5e1; }
+  .legend-dot { width:12px; height:12px; border-radius:3px; flex-shrink:0; }
+
+  /* Layer cards */
+  .layer-row { display:grid; gap:16px; margin-bottom:24px; }
+  .layer-row.three { grid-template-columns: repeat(3, 1fr); }
+  .layer-row.two { grid-template-columns: repeat(2, 1fr); }
+  .layer-row.five { grid-template-columns: repeat(5, 1fr); }
+  @media(max-width:900px) { .layer-row.three, .layer-row.five { grid-template-columns:1fr; } .layer-row.two { grid-template-columns:1fr; } }
+
+  .layer-card { border-radius:10px; padding:16px; border:1px solid; transition:transform .15s; }
+  .layer-card:hover { transform:translateY(-2px); }
+  .layer-card.L0 { background:var(--L0-bg); border-color:var(--L0-mid); color:#1e1b4b; }
+  .layer-card.L1 { background:var(--L1-bg); border-color:var(--L1-mid); color:#164e63; }
+  .layer-card.L2R { background:var(--L2R-bg); border-color:var(--L2R-mid); color:#881337; }
+  .layer-card.L2B { background:var(--L2B-bg); border-color:var(--L2B-mid); color:#064e3b; }
+  .layer-card.L2U { background:var(--L2U-bg); border-color:var(--L2U-mid); color:#78350f; }
+  .layer-card.DEF { background:var(--DEF-bg); border-color:var(--DEF-light); color:#374151; }
+
+  .card-title { font-size:14px; font-weight:700; margin-bottom:4px; }
+  .card-meta { font-size:11px; opacity:.7; margin-bottom:8px; }
+  .card-body { font-size:12px; line-height:1.6; }
+  .card-body ul { padding-left:16px; margin:4px 0; }
+  .card-body li { margin-bottom:2px; }
+
+  .tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:10px; font-weight:600; margin:1px 2px; }
+  .tag.L0 { background:var(--L0); color:white; }
+  .tag.L1 { background:var(--L1); color:white; }
+  .tag.L2R { background:var(--L2R); color:white; }
+  .tag.L2B { background:var(--L2B); color:white; }
+  .tag.L2U { background:var(--L2U); color:white; }
+  .tag.DEF { background:var(--DEF); color:white; }
+  .tag.art-r { background:var(--ART-research); color:white; }
+  .tag.art-d { background:var(--ART-design); color:white; }
+  .tag.art-o { background:var(--ART-output); color:white; }
+  .tag.art-l { background:var(--ART-ledger); color:white; }
+
+  /* Flow diagram */
+  .flow-container { position:relative; padding:20px 0; }
+  .flow-layer { display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:8px; flex-wrap:wrap; }
+  .flow-node { padding:10px 16px; border-radius:8px; font-size:12px; font-weight:600; text-align:center; min-width:140px; border:2px solid; position:relative; }
+  .flow-node.L0 { background:var(--L0); color:white; border-color:#4338ca; }
+  .flow-node.L1 { background:var(--L1); color:white; border-color:#0e7490; }
+  .flow-node.L2U { background:var(--L2U); color:white; border-color:#b45309; }
+  .flow-node.L2B { background:var(--L2B); color:white; border-color:#047857; }
+  .flow-node.L2R { background:var(--L2R); color:white; border-color:#be123c; }
+  .flow-node.DEF { background:var(--DEF); color:white; border-color:#4b5563; }
+  .flow-node small { display:block; font-weight:400; font-size:10px; opacity:.85; margin-top:2px; }
+
+  .flow-arrow { text-align:center; color:#64748b; font-size:20px; margin:4px 0; }
+  .flow-arrow-h { color:#64748b; font-size:18px; }
+
+  /* Artifact flow table */
+  .art-table { width:100%; border-collapse:collapse; margin:16px 0; font-size:12px; }
+  .art-table th { text-align:left; padding:10px 12px; border-bottom:2px solid #334155; color:#94a3b8; font-size:11px; text-transform:uppercase; letter-spacing:.5px; }
+  .art-table td { padding:8px 12px; border-bottom:1px solid #1e293b; vertical-align:top; }
+  .art-table tr:hover td { background:#1e293b; }
+
+  /* Agent heatmap */
+  .agent-grid { display:grid; grid-template-columns:120px repeat(12,1fr); gap:1px; background:#1e293b; border-radius:8px; overflow:hidden; margin:16px 0; font-size:11px; }
+  .agent-cell { padding:8px 6px; text-align:center; background:#0f172a; }
+  .agent-cell.header { background:#1e293b; font-weight:600; color:#94a3b8; font-size:10px; }
+  .agent-cell.agent-name { text-align:left; font-weight:600; padding-left:10px; }
+  .agent-cell.owned { font-weight:700; }
+
+  /* Cascade view */
+  .cascade { position:relative; }
+  .cascade-level { margin-bottom:32px; padding-left:24px; border-left:3px solid; }
+  .cascade-level.L0 { border-color:var(--L0); }
+  .cascade-level.L1 { border-color:var(--L1); }
+  .cascade-level.L2 { border-color:var(--L2U); }
+  .cascade-label { position:relative; left:-36px; display:inline-block; padding:4px 12px; border-radius:4px; font-size:11px; font-weight:700; color:white; margin-bottom:12px; }
+  .cascade-label.L0 { background:var(--L0); }
+  .cascade-label.L1 { background:var(--L1); }
+  .cascade-label.L2 { background:var(--L2U); }
+
+  .cascade-doc { background:#1e293b; border-radius:8px; padding:12px 16px; margin-bottom:8px; border-left:4px solid; cursor:pointer; transition:all .2s; }
+  .cascade-doc:hover { background:#334155; }
+  .cascade-doc.L0 { border-left-color:var(--L0); }
+  .cascade-doc.L1 { border-left-color:var(--L1); }
+  .cascade-doc.L2U { border-left-color:var(--L2U); }
+  .cascade-doc.L2R { border-left-color:var(--L2R); }
+  .cascade-doc.L2B { border-left-color:var(--L2B); }
+  .cascade-doc .doc-title { font-weight:600; font-size:13px; }
+  .cascade-doc .doc-detail { font-size:11px; color:#94a3b8; margin-top:4px; display:none; }
+  .cascade-doc.expanded .doc-detail { display:block; }
+
+  .produces-tag { display:inline-block; padding:1px 6px; border-radius:3px; font-size:10px; margin:1px; }
+
+  /* Deferred items */
+  .deferred-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:12px; margin:16px 0; }
+  .deferred-card { background:#1e293b; border-radius:8px; padding:14px; border:1px solid #334155; }
+  .deferred-card .layer-num { font-size:11px; font-weight:700; padding:2px 8px; border-radius:4px; display:inline-block; margin-bottom:6px; }
+  .deferred-card .def-title { font-weight:600; font-size:13px; margin-bottom:4px; }
+  .deferred-card .def-desc { font-size:12px; color:#94a3b8; line-height:1.5; }
+
+  /* Expandable sections */
+  .expandable { cursor:pointer; }
+  .expandable::before { content:'▸ '; transition:transform .2s; }
+  .expandable.open::before { content:'▾ '; }
+  .expand-content { display:none; margin-top:8px; padding-left:16px; }
+  .expand-content.show { display:block; }
+
+  /* Stats bar */
+  .stats { display:flex; gap:12px; flex-wrap:wrap; margin:16px 0; }
+  .stat { background:#1e293b; border-radius:8px; padding:12px 18px; text-align:center; min-width:110px; }
+  .stat .num { font-size:28px; font-weight:800; }
+  .stat .label { font-size:11px; color:#94a3b8; margin-top:2px; }
+  .stat.L0 .num { color:var(--L0); }
+  .stat.L1 .num { color:var(--L1); }
+  .stat.L2U .num { color:var(--L2U); }
+  .stat.L2R .num { color:var(--L2R); }
+  .stat.L2B .num { color:var(--L2B); }
+
+  /* Connection lines for cascade */
+  .conn-line { stroke-width:2; fill:none; }
+  .conn-L0 { stroke:var(--L0); }
+  .conn-L1 { stroke:var(--L1); }
+  .conn-L2U { stroke:var(--L2U); }
+  .conn-L2R { stroke:var(--L2R); }
+  .conn-L2B { stroke:var(--L2B); }
+
+  /* Tooltip */
+  .tooltip { position:fixed; background:#1e293b; border:1px solid #475569; border-radius:6px; padding:10px 14px; font-size:12px; max-width:300px; z-index:200; pointer-events:none; display:none; box-shadow:0 8px 24px rgba(0,0,0,.4); }
+
+  /* Scroll indicator */
+  .scroll-hint { text-align:center; color:#475569; font-size:11px; margin:8px 0; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <button class="nav-btn active" data-tab="overview">System Overview</button>
+  <button class="nav-btn" data-tab="documents">Document Map</button>
+  <button class="nav-btn" data-tab="artifacts">Artifact Flow</button>
+  <button class="nav-btn" data-tab="agents">Agent Ownership</button>
+  <button class="nav-btn" data-tab="cascade">Cascade View</button>
+  <button class="nav-btn" data-tab="deferred">Deferred → 03+</button>
+</nav>
+
+<div id="tooltip" class="tooltip"></div>
+
+<!-- ==================== TAB 1: OVERVIEW ==================== -->
+<div class="panel active" id="panel-overview">
+  <h1>CRLD System Map</h1>
+  <p class="subtitle">ClassRoots Learning Design — Layers 00 through 02 | 14 documents | 9,223 lines</p>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--L0)"></div>00 Philosophy</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--L1)"></div>01 Rulebook</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--L2U)"></div>02 Upstream Engine</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--L2R)"></div>02 Review Engines</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--L2B)"></div>02 Build Engines</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--DEF)"></div>03–09 Deferred</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat L0"><div class="num">2</div><div class="label">Philosophy Docs</div></div>
+    <div class="stat L0"><div class="num">18</div><div class="label">Principles (P1–P18)</div></div>
+    <div class="stat L1"><div class="num">7</div><div class="label">Rulebook Docs</div></div>
+    <div class="stat L1"><div class="num">92</div><div class="label">Module Rules</div></div>
+    <div class="stat L1"><div class="num">67</div><div class="label">Applet Rules</div></div>
+    <div class="stat L2U"><div class="num">1</div><div class="label">Upstream Engine</div></div>
+    <div class="stat L2R"><div class="num">2</div><div class="label">Review Engines</div></div>
+    <div class="stat L2B"><div class="num">2</div><div class="label">Build Engines</div></div>
+    <div class="stat" style="border:1px solid #475569"><div class="num" style="color:#f59e0b">12</div><div class="label">Scoring Categories</div></div>
+  </div>
+
+  <h2>Architecture Flow</h2>
+  <div class="flow-container">
+    <!-- Layer 0 -->
+    <div class="flow-layer">
+      <div class="flow-node L0">Content Bible<small>18 Principles · 1,151 lines</small></div>
+      <div class="flow-node L0">IAS / CATF<small>11 Families · 19 Actions · 1,371 lines</small></div>
+    </div>
+    <div class="flow-arrow">▼ governs ▼</div>
+
+    <!-- Layer 1 -->
+    <div class="flow-layer">
+      <div class="flow-node L1">Module Rulebook<small>85 M-# + 7 T1 · 2,811 lines</small></div>
+      <div class="flow-node L1">Applet Rulebook<small>62 A-# + 5 T1 · 1,158 lines</small></div>
+      <div class="flow-node L1">Tropes Library<small>7 slide + 10 overlay · 782 lines</small></div>
+    </div>
+    <div class="flow-layer" style="margin-top:4px">
+      <div class="flow-node L1">Content Type Diff<small>TGAR · Learn/Practice/Recall/Challenge</small></div>
+      <div class="flow-node L1">Linguistic Framework<small>GO/COND/NO-GO · 804 lines</small></div>
+      <div class="flow-node L1">Module-Applet Contract<small>10 APPLET-* defects</small></div>
+      <div class="flow-node L1">Reference Library<small>Curricula · Research · Tools</small></div>
+    </div>
+    <div class="flow-arrow">▼ operationalizes ▼</div>
+
+    <!-- Layer 2 -->
+    <div class="flow-layer">
+      <div class="flow-node L2U" style="min-width:200px">Chapter Research Engine<small>5 phases · produces ALL artifacts · 1,565 lines</small></div>
+    </div>
+    <div class="flow-arrow">▼ feeds ▼</div>
+    <div class="flow-layer">
+      <div class="flow-node L2B">Module Build<small>3 modes (A/B/C) · 1,008 lines</small></div>
+      <div class="flow-arrow-h">⇄</div>
+      <div class="flow-node L2R">Module Review<small>12 categories · 100% · 2,109 lines</small></div>
+    </div>
+    <div class="flow-layer" style="margin-top:6px">
+      <div class="flow-node L2B" style="opacity:.85">Applet Build<small>child · 6-stage · 987 lines</small></div>
+      <div class="flow-arrow-h">⇄</div>
+      <div class="flow-node L2R" style="opacity:.85">Applet Review<small>child · 8 categories · 830 lines</small></div>
+    </div>
+    <div class="flow-arrow">▼ deferred to ▼</div>
+    <div class="flow-layer">
+      <div class="flow-node DEF">03 Schemas</div>
+      <div class="flow-node DEF">04 Role Agents</div>
+      <div class="flow-node DEF">05 Orchestration</div>
+      <div class="flow-node DEF">06–09 …</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TAB 2: DOCUMENT MAP ==================== -->
+<div class="panel" id="panel-documents">
+  <h1>Document Map</h1>
+  <p class="subtitle">Every document in layers 00 through 02 — what it defines and what it connects to</p>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--L0)"></div>00 Philosophy</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--L1)"></div>01 Rulebook</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--L2U)"></div>02 Upstream</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--L2R)"></div>02 Review</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--L2B)"></div>02 Build</div>
+  </div>
+
+  <h2 style="color:var(--L0)">Layer 00: Philosophy</h2>
+  <div class="layer-row two">
+    <div class="layer-card L0">
+      <div class="card-title">Content_Bible.md</div>
+      <div class="card-meta">v2.1 · 1,151 lines · 9 Parts + 2 Appendices</div>
+      <div class="card-body">
+        <strong>THE foundational document.</strong> Defines the mission, 18 governing principles (P1–P18), Classroom Facilitation Model, module & applet philosophy, digital delight, anti-patterns, and the North Star Test.
+        <ul>
+          <li><strong>Consumed by:</strong> <span class="tag L1">All 01_ docs</span> <span class="tag L2U">Chapter Research</span> <span class="tag L2R">Both Reviews</span> <span class="tag L2B">Both Builds</span></li>
+          <li><strong>Produces:</strong> Principles P1–P18, Voice standards, Design philosophy</li>
+        </ul>
+      </div>
+    </div>
+    <div class="layer-card L0">
+      <div class="card-title">IAS_CATF.md</div>
+      <div class="card-meta">v1.0.1 · 1,371 lines · 7 Parts + 3 Appendices</div>
+      <div class="card-body">
+        <strong>Interaction design frameworks.</strong> 11 IAS families (Manipulate, Observe, Construct, Compare, Sequence, Classify, Partition, Annotate, Navigate, Parameter-Space, Measure) + 19 CATF cognitive actions.
+        <ul>
+          <li><strong>Consumed by:</strong> <span class="tag L1">Applet Rulebook</span> <span class="tag L1">Tropes Library</span> <span class="tag L2U">Chapter Research</span> <span class="tag L2B">Applet Build</span> <span class="tag L2R">Applet Review</span></li>
+          <li><strong>Produces:</strong> Interaction archetypes, cognitive action taxonomy, screen-level IAS mappings</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="color:var(--L1)">Layer 01: Rulebook</h2>
+  <div class="layer-row three">
+    <div class="layer-card L1">
+      <div class="card-title">Module_Rulebook.md</div>
+      <div class="card-meta">v1.1.0 · 2,811 lines · 15 Parts + 4 Appendices</div>
+      <div class="card-body">
+        85 M-# rules + 7 T1-M rules. Scope & LO integrity, CPA progression, cognitive load, variation theory, misconceptions, pacing, spine, tropes, difficulty, language, teacher support, content-type, applet-specific, knowledge continuity, cross-curriculum.
+        <ul>
+          <li><strong>Consumed by:</strong> <span class="tag L2R">Module Review</span> <span class="tag L2B">Module Build</span> <span class="tag L2U">Chapter Research</span></li>
+          <li><strong>Operationalizes:</strong> <span class="tag L0">Content Bible P1–P18</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="layer-card L1">
+      <div class="card-title">Applet_Rulebook.md</div>
+      <div class="card-meta">v1.2.0 · 1,158 lines · 10 Parts + 4 Appendices</div>
+      <div class="card-body">
+        62 A-# rules + 5 T1-A rules. Applet purpose, IAS alignment, CATF alignment, 6-stage learning, interaction types, digital delight, classroom facilitation, content-type.
+        <ul>
+          <li><strong>Consumed by:</strong> <span class="tag L2R">Applet Review</span> <span class="tag L2B">Applet Build</span> <span class="tag L2U">Chapter Research</span></li>
+          <li><strong>Operationalizes:</strong> <span class="tag L0">Content Bible</span> <span class="tag L0">IAS/CATF</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="layer-card L1">
+      <div class="card-title">Content_Tropes_Library.md</div>
+      <div class="card-meta">782 lines · 7 Parts</div>
+      <div class="card-body">
+        7 module slide tropes (Title, Exposition, Worked Example, Guided Practice, Independent Practice, Consolidation, Transition) + 10 overlay tropes. Trope selection guide per content type.
+        <ul>
+          <li><strong>Consumed by:</strong> <span class="tag L2B">Module Build</span> <span class="tag L2B">Applet Build</span> <span class="tag L2R">Both Reviews</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="layer-row two">
+    <div class="layer-card L1">
+      <div class="card-title">Content_Type_Differentiation.md</div>
+      <div class="card-meta">287 lines · 8 Parts</div>
+      <div class="card-body">
+        TGAR rhythm (Teach → Guide → Apply → Reflect). Four content types: Learn, Practice, Recall, Challenge. Scoring adjustments per type. Classification guidance.
+        <ul>
+          <li><strong>Consumed by:</strong> <span class="tag L2R">Module Review §6</span> <span class="tag L2R">Applet Review</span> <span class="tag L2U">Chapter Research</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="layer-card L1">
+      <div class="card-title">Linguistic_Framework.md</div>
+      <div class="card-meta">v1.3 · 804 lines · 10 Parts + 4 Appendices</div>
+      <div class="card-body">
+        GO/CONDITIONAL/NO-GO verification. Notation conventions (numbers, operators, vocabulary, formalism). 41 prohibited student-facing terms (LING-PROHIBITED-TERM defect). Pluggable localization.
+        <ul>
+          <li><strong>Consumed by:</strong> <span class="tag L2R">Both Reviews (D/Da categories)</span> <span class="tag L2B">Both Builds</span> <span class="tag L2U">Chapter Research</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="layer-row two">
+    <div class="layer-card L1">
+      <div class="card-title">Module_Applet_Contract.md</div>
+      <div class="card-meta">305 lines · 8 Parts</div>
+      <div class="card-body">
+        Integration spec for applets within module spine. File mapping, lifecycle integration, Applet Context Slides, 10 APPLET-* defect codes. Enforces Directive 17 (applets are module assets).
+        <ul>
+          <li><strong>Consumed by:</strong> <span class="tag L2R">Module Review §10</span> <span class="tag L2B">Module Build</span> <span class="tag L2U">Chapter Research</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="layer-card L1">
+      <div class="card-title">Reference_Library.md</div>
+      <div class="card-meta">~600 lines</div>
+      <div class="card-body">
+        Living catalog: interactive tools (GeoGebra, Desmos, PhET, Khan, Mathigon), curricula (CCSS, Singapore, UK, CBSE, KM), research foundations, visual models, templates.
+        <ul>
+          <li><strong>Consumed by:</strong> <span class="tag L2U">Chapter Research §9</span> <span class="tag L2B">Both Builds</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="color:var(--L2U)">Layer 02: Engines</h2>
+  <div class="layer-row five">
+    <div class="layer-card L2U" style="grid-column:span 5">
+      <div class="card-title">Chapter_Research_Engine.md — UPSTREAM</div>
+      <div class="card-meta">v1.0 · 1,565 lines · 10 Sections + 4 Appendices</div>
+      <div class="card-body">
+        5-phase workflow: Scope → Cross-Curricular Validation → Misconception Research → Interactive Landscape Scan → Design Specification. Produces ALL artifacts consumed downstream. Reads from ALL 00_ and 01_ docs.
+        <ul>
+          <li><strong>Produces:</strong> <span class="tag art-r">Chapter_Brief</span> <span class="tag art-r">LO_BRIEF</span> <span class="tag art-r">RESEARCH_BRIEF</span> <span class="tag art-l">Knowledge_Ledger</span> <span class="tag art-d">IDEAL_BLUEPRINT</span> <span class="tag art-d">BUILD_SPEC</span> <span class="tag art-d">DESIGN_SPEC</span></li>
+          <li><strong>Feeds:</strong> <span class="tag L2R">Both Review Engines</span> <span class="tag L2B">Both Build Engines</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="layer-row two">
+    <div class="layer-card L2B">
+      <div class="card-title">Module_Build_Engine.md — PARENT BUILD</div>
+      <div class="card-meta">v1.0 · 1,008 lines</div>
+      <div class="card-body">
+        3 modes: A (New), B (Source-Informed), C (Reviewed Rebuild). Module-Only overlay. Per-slide sub-agent dispatch. BUILD_LOG production.
+        <ul>
+          <li><strong>Consumes:</strong> <span class="tag art-r">LO_BRIEF</span> <span class="tag art-r">RESEARCH_BRIEF</span> <span class="tag art-d">BUILD_SPEC</span> <span class="tag art-l">Knowledge_Ledger</span></li>
+          <li><strong>Produces:</strong> <span class="tag art-o">Module PPTX</span> <span class="tag art-o">BUILD_LOG</span></li>
+          <li><strong>Invokes child:</strong> <span class="tag L2B">Applet Build</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="layer-card L2R">
+      <div class="card-title">Module_Review_Engine.md — PARENT REVIEW</div>
+      <div class="card-meta">v1.0 · 2,109 lines</div>
+      <div class="card-body">
+        12-category rubric (100%). Tier 1/Tier 2. Score bands: Ship-ready / Upgradeable / Re-architect / Reframe. RA-1–RA-8 checks. 6-phase workflow.
+        <ul>
+          <li><strong>Consumes:</strong> <span class="tag art-o">Module PPTX</span> <span class="tag art-r">RESEARCH_BRIEF</span> <span class="tag art-l">Knowledge_Ledger</span> <span class="tag art-d">IDEAL_BLUEPRINT</span></li>
+          <li><strong>Produces:</strong> <span class="tag art-o">REVIEW_REPORT</span> <span class="tag art-o">Debate Log</span> <span class="tag art-o">Annotated PPTX</span></li>
+          <li><strong>Invokes child:</strong> <span class="tag L2R">Applet Review</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="layer-row two">
+    <div class="layer-card L2B" style="opacity:.9">
+      <div class="card-title">Applet_Build_Engine.md — CHILD BUILD</div>
+      <div class="card-meta">v1.0 · 987 lines</div>
+      <div class="card-body">
+        6-stage learning model. Screen-level construction. IAS/CATF mapping. Child/Standalone modes. Overlay trope application.
+        <ul>
+          <li><strong>Consumes:</strong> <span class="tag art-r">RESEARCH_BRIEF §applet</span> <span class="tag art-d">BUILD_SPEC §applet</span> <span class="tag art-l">Knowledge_Ledger</span></li>
+          <li><strong>Produces:</strong> <span class="tag art-o">Applet PPTX</span> <span class="tag art-o">BUILD_LOG §applet</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="layer-card L2R" style="opacity:.9">
+      <div class="card-title">Applet_Review_Engine.md — CHILD REVIEW</div>
+      <div class="card-meta">v1.0 · 830 lines</div>
+      <div class="card-body">
+        8 categories (Aa–Ha, 100%). Child/Standalone modes. Shares score bands, severity, Tier system from parent.
+        <ul>
+          <li><strong>Consumes:</strong> <span class="tag art-o">Applet PPTX</span> <span class="tag art-r">RESEARCH_BRIEF §applet</span> <span class="tag art-d">DESIGN_SPEC §applet</span></li>
+          <li><strong>Produces:</strong> <span class="tag art-o">Applet REVIEW_REPORT</span> <span class="tag art-o">Annotated Applet PPTX</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TAB 3: ARTIFACT FLOW ==================== -->
+<div class="panel" id="panel-artifacts">
+  <h1>Artifact Flow</h1>
+  <p class="subtitle">Every artifact in the system — who produces it, who consumes it, and what layer it belongs to</p>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--ART-research)"></div>Research Artifacts</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--ART-design)"></div>Design Artifacts</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--ART-output)"></div>Output Artifacts</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--ART-ledger)"></div>Living Ledger</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--L2U)"></div>Produced by Upstream</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--L2B)"></div>Produced by Build</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--L2R)"></div>Produced by Review</div>
+  </div>
+
+  <table class="art-table">
+    <thead>
+      <tr>
+        <th>Artifact</th>
+        <th>Type</th>
+        <th>Produced By</th>
+        <th>Consumed By</th>
+        <th>Lifecycle</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Chapter_Brief.md</strong></td>
+        <td><span class="tag art-r">Research</span></td>
+        <td><span class="tag L2U">Chapter Research</span></td>
+        <td><span class="tag L2R">Module Review</span> <span class="tag L2B">Module Build</span></td>
+        <td>Created once per chapter</td>
+      </tr>
+      <tr>
+        <td><strong>LO_BRIEF.md</strong></td>
+        <td><span class="tag art-r">Research</span></td>
+        <td><span class="tag L2U">Chapter Research</span></td>
+        <td><span class="tag L2R">Module Review</span> <span class="tag L2B">Module Build</span> <span class="tag L2R">Applet Review</span> <span class="tag L2B">Applet Build</span></td>
+        <td>One per module (within chapter)</td>
+      </tr>
+      <tr>
+        <td><strong>RESEARCH_BRIEF.md</strong></td>
+        <td><span class="tag art-r">Research</span></td>
+        <td><span class="tag L2U">Chapter Research</span></td>
+        <td><span class="tag L2R">Module Review</span> <span class="tag L2B">Module Build</span> <span class="tag L2R">Applet Review</span> <span class="tag L2B">Applet Build</span></td>
+        <td>One per module + §applet sections</td>
+      </tr>
+      <tr>
+        <td><strong>Knowledge_Ledger.md</strong></td>
+        <td><span class="tag art-l">Ledger</span></td>
+        <td><span class="tag L2U">Chapter Research</span> <em style="color:#94a3b8">(initializes)</em></td>
+        <td><span class="tag L2R">Module Review</span> <span class="tag L2B">Module Build</span> <span class="tag L2R">Applet Review</span> <span class="tag L2B">Applet Build</span></td>
+        <td><strong>ALL engines read + update</strong>. Cumulative knowledge state.</td>
+      </tr>
+      <tr>
+        <td><strong>IDEAL_BLUEPRINT.md</strong></td>
+        <td><span class="tag art-d">Design</span></td>
+        <td><span class="tag L2U">Chapter Research</span></td>
+        <td><span class="tag L2B">Module Build</span> <span class="tag L2R">Module Review</span></td>
+        <td>Pedagogical reference (what perfection looks like)</td>
+      </tr>
+      <tr>
+        <td><strong>BUILD_SPEC.md</strong></td>
+        <td><span class="tag art-d">Design</span></td>
+        <td><span class="tag L2U">Chapter Research</span></td>
+        <td><span class="tag L2B">Module Build</span> <span class="tag L2B">Applet Build</span></td>
+        <td>Production specification (slide-by-slide / screen-by-screen)</td>
+      </tr>
+      <tr>
+        <td><strong>DESIGN_SPEC.md</strong></td>
+        <td><span class="tag art-d">Design</span></td>
+        <td><span class="tag L2U">Chapter Research</span></td>
+        <td><span class="tag L2R">Applet Review</span> <span class="tag L2B">Applet Build</span></td>
+        <td>Applet-specific design specification</td>
+      </tr>
+      <tr>
+        <td><strong>Module PPTX</strong></td>
+        <td><span class="tag art-o">Output</span></td>
+        <td><span class="tag L2B">Module Build</span></td>
+        <td><span class="tag L2R">Module Review</span></td>
+        <td>Constructed module → reviewed → may re-enter Mode C</td>
+      </tr>
+      <tr>
+        <td><strong>Applet PPTX</strong></td>
+        <td><span class="tag art-o">Output</span></td>
+        <td><span class="tag L2B">Applet Build</span></td>
+        <td><span class="tag L2R">Applet Review</span></td>
+        <td>Constructed applet storyboard</td>
+      </tr>
+      <tr>
+        <td><strong>BUILD_LOG</strong></td>
+        <td><span class="tag art-o">Output</span></td>
+        <td><span class="tag L2B">Module Build</span> <span class="tag L2B">Applet Build</span></td>
+        <td><span class="tag L2R">Both Reviews</span> <span class="tag DEF">Evolver</span></td>
+        <td>Construction record. Consumed for context during review.</td>
+      </tr>
+      <tr>
+        <td><strong>REVIEW_REPORT.md</strong></td>
+        <td><span class="tag art-o">Output</span></td>
+        <td><span class="tag L2R">Module Review</span> <span class="tag L2R">Applet Review</span></td>
+        <td><span class="tag L2B">Module Build (Mode C)</span> <span class="tag DEF">Evolver</span></td>
+        <td>Defect list + scores → drives rebuild</td>
+      </tr>
+      <tr>
+        <td><strong>Debate Log</strong></td>
+        <td><span class="tag art-o">Output</span></td>
+        <td><span class="tag L2R">Module Review</span></td>
+        <td><span class="tag DEF">Evolver</span></td>
+        <td>Agent negotiation record. Pattern analysis input.</td>
+      </tr>
+      <tr>
+        <td><strong>Annotated PPTX</strong></td>
+        <td><span class="tag art-o">Output</span></td>
+        <td><span class="tag L2R">Module Review</span> <span class="tag L2R">Applet Review</span></td>
+        <td>Human reviewer</td>
+        <td>Source file with slide/screen-level comments</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Knowledge Ledger Lifecycle</h2>
+  <div style="background:#1e293b; border-radius:10px; padding:20px; margin:12px 0; border-left:4px solid var(--ART-ledger);">
+    <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+      <div class="flow-node L2U" style="min-width:120px">Chapter Research<small>INITIALIZES</small></div>
+      <span style="color:#64748b; font-size:18px">→</span>
+      <div class="flow-node L2B" style="min-width:120px">Module Build<small>READS + UPDATES</small></div>
+      <span style="color:#64748b; font-size:18px">→</span>
+      <div class="flow-node L2R" style="min-width:120px">Module Review<small>READS + UPDATES</small></div>
+      <span style="color:#64748b; font-size:18px">→</span>
+      <div class="flow-node L2B" style="min-width:120px; opacity:.85">Applet Build<small>READS + UPDATES</small></div>
+      <span style="color:#64748b; font-size:18px">→</span>
+      <div class="flow-node L2R" style="min-width:120px; opacity:.85">Applet Review<small>READS + UPDATES</small></div>
+    </div>
+    <p style="margin-top:12px; font-size:12px; color:#94a3b8;"><strong>Why review engines update:</strong> (a) artifacts may return for deeper review cycles; (b) humans may implement changes without feeding back, so review captures state independently.</p>
+  </div>
+</div>
+
+<!-- ==================== TAB 4: AGENT OWNERSHIP ==================== -->
+<div class="panel" id="panel-agents">
+  <h1>Agent Ownership Map</h1>
+  <p class="subtitle">Current 6 agents → planned 8+1 architecture · Exclusive category ownership (Decision R4)</p>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--AG-ped)"></div>Ped (→ Ped + Cog)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--AG-id)"></div>ID (→ ID_Flow + ID_Grad)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--AG-vd)"></div>VD</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--AG-tea)"></div>Tea</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--AG-ddd)"></div>DDD</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--AG-loc)"></div>Loc (→ Loc_Lang + Loc_Context)</div>
+  </div>
+
+  <h2>Module Review — 12 Categories</h2>
+  <div style="overflow-x:auto">
+    <div class="agent-grid">
+      <div class="agent-cell header">Agent</div>
+      <div class="agent-cell header">A (12%)</div>
+      <div class="agent-cell header">B (8%)</div>
+      <div class="agent-cell header">C (8%)</div>
+      <div class="agent-cell header">D (8%)</div>
+      <div class="agent-cell header">E (8%)</div>
+      <div class="agent-cell header">F (8%)</div>
+      <div class="agent-cell header">G (8%)</div>
+      <div class="agent-cell header">H (8%)</div>
+      <div class="agent-cell header">J (8%)</div>
+      <div class="agent-cell header">K (8%)</div>
+      <div class="agent-cell header">T (8%)</div>
+      <div class="agent-cell header">V (8%)</div>
+
+      <div class="agent-cell agent-name" style="color:var(--AG-ped)">Ped</div>
+      <div class="agent-cell owned" style="background:var(--AG-ped); color:white">★ T1</div>
+      <div class="agent-cell owned" style="background:var(--AG-ped); color:white">★ T1</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div>
+      <div class="agent-cell owned" style="background:var(--AG-ped); color:white">★ T1</div>
+
+      <div class="agent-cell agent-name" style="color:var(--AG-id)">ID</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div>
+      <div class="agent-cell owned" style="background:var(--AG-id); color:white">★ T1</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div>
+      <div class="agent-cell owned" style="background:var(--AG-id); color:white">★ T1</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div>
+      <div class="agent-cell owned" style="background:var(--AG-id); color:white">★ T1</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div>
+
+      <div class="agent-cell agent-name" style="color:var(--AG-vd)">VD</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div>
+      <div class="agent-cell owned" style="background:var(--AG-vd); color:white">T2</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div>
+
+      <div class="agent-cell agent-name" style="color:var(--AG-tea)">Tea</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div>
+      <div class="agent-cell owned" style="background:var(--AG-tea); color:white">★ T1</div>
+      <div class="agent-cell"></div>
+
+      <div class="agent-cell agent-name" style="color:var(--AG-ddd)">DDD</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div>
+      <div class="agent-cell owned" style="background:var(--AG-ddd); color:white">T2</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div>
+
+      <div class="agent-cell agent-name" style="color:var(--AG-loc)">Loc</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div>
+      <div class="agent-cell owned" style="background:var(--AG-loc); color:white">★ T1</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div>
+      <div class="agent-cell owned" style="background:var(--AG-loc); color:white">T2</div>
+      <div class="agent-cell owned" style="background:var(--AG-loc); color:white">T2</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div>
+    </div>
+  </div>
+  <p style="font-size:11px; color:#64748b; margin-top:4px;">★ = Tier 1 (minimum 70% required) · T2 = Tier 2 (quality enhancement, no minimum threshold)</p>
+
+  <h2>Applet Review — 8 Categories</h2>
+  <div style="overflow-x:auto">
+    <div class="agent-grid" style="grid-template-columns:120px repeat(8,1fr);">
+      <div class="agent-cell header">Agent</div>
+      <div class="agent-cell header">Aa</div>
+      <div class="agent-cell header">Ba</div>
+      <div class="agent-cell header">Ca</div>
+      <div class="agent-cell header">Da</div>
+      <div class="agent-cell header">Ea</div>
+      <div class="agent-cell header">Fa</div>
+      <div class="agent-cell header">Ga</div>
+      <div class="agent-cell header">Ha</div>
+
+      <div class="agent-cell agent-name" style="color:var(--AG-ped)">Ped</div>
+      <div class="agent-cell owned" style="background:var(--AG-ped); color:white">★</div>
+      <div class="agent-cell owned" style="background:var(--AG-ped); color:white">★</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div>
+
+      <div class="agent-cell agent-name" style="color:var(--AG-id)">ID</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div>
+      <div class="agent-cell owned" style="background:var(--AG-id); color:white">★</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div>
+      <div class="agent-cell owned" style="background:var(--AG-id); color:white">★</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div>
+
+      <div class="agent-cell agent-name" style="color:var(--AG-vd)">VD</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div>
+      <div class="agent-cell owned" style="background:var(--AG-vd); color:white">—</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div>
+
+      <div class="agent-cell agent-name" style="color:var(--AG-tea)">Tea</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div>
+      <div class="agent-cell owned" style="background:var(--AG-tea); color:white">★</div>
+      <div class="agent-cell"></div>
+
+      <div class="agent-cell agent-name" style="color:var(--AG-ddd)">DDD</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div>
+      <div class="agent-cell owned" style="background:var(--AG-ddd); color:white">—</div>
+
+      <div class="agent-cell agent-name" style="color:var(--AG-loc)">Loc</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div>
+      <div class="agent-cell owned" style="background:var(--AG-loc); color:white">★</div>
+      <div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div><div class="agent-cell"></div>
+    </div>
+  </div>
+
+  <h2>8+1 Agent Architecture (Planned for 04_ROLE_AGENTS)</h2>
+  <div style="background:#1e293b; border-radius:10px; padding:20px; margin:12px 0;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:12px;">
+      <div style="background:#0f172a; padding:12px; border-radius:8px; border-left:3px solid var(--AG-ped);">
+        <div style="font-weight:700; color:var(--AG-ped); font-size:13px;">Ped → Ped + Cog</div>
+        <div style="font-size:11px; color:#94a3b8; margin-top:4px;">Ped: pedagogical sequence<br>Cog: misconceptions + cognitive load<br><em>("Doubts Designer")</em></div>
+      </div>
+      <div style="background:#0f172a; padding:12px; border-radius:8px; border-left:3px solid var(--AG-id);">
+        <div style="font-weight:700; color:var(--AG-id); font-size:13px;">ID → ID_Flow + ID_Grad</div>
+        <div style="font-size:11px; color:#94a3b8; margin-top:4px;">ID_Flow: instructional flow/progression<br>ID_Grad: difficulty gradation</div>
+      </div>
+      <div style="background:#0f172a; padding:12px; border-radius:8px; border-left:3px solid var(--AG-loc);">
+        <div style="font-weight:700; color:var(--AG-loc); font-size:13px;">Loc → Loc_Lang + Loc_Context</div>
+        <div style="font-size:11px; color:#94a3b8; margin-top:4px;">Loc_Lang: linguistic verification<br>Loc_Context: cultural/contextual appropriateness</div>
+      </div>
+      <div style="background:#0f172a; padding:12px; border-radius:8px; border-left:3px solid var(--AG-vd);">
+        <div style="font-weight:700; color:var(--AG-vd); font-size:13px;">VD — unchanged</div>
+        <div style="font-size:11px; color:#94a3b8; margin-top:4px;">Visual Designer</div>
+      </div>
+      <div style="background:#0f172a; padding:12px; border-radius:8px; border-left:3px solid var(--AG-tea);">
+        <div style="font-weight:700; color:var(--AG-tea); font-size:13px;">Tea — unchanged</div>
+        <div style="font-size:11px; color:#94a3b8; margin-top:4px;">Teacher</div>
+      </div>
+      <div style="background:#0f172a; padding:12px; border-radius:8px; border-left:3px solid var(--AG-ddd);">
+        <div style="font-weight:700; color:var(--AG-ddd); font-size:13px;">DDD — unchanged</div>
+        <div style="font-size:11px; color:#94a3b8; margin-top:4px;">Digital Delight Designer</div>
+      </div>
+      <div style="background:#0f172a; padding:12px; border-radius:8px; border-left:3px solid #94a3b8;">
+        <div style="font-weight:700; color:#f1f5f9; font-size:13px;">+1: Evolver (master)</div>
+        <div style="font-size:11px; color:#94a3b8; margin-top:4px;">Per-agent sub-evolvers → consolidated by master Evolver. Human-triggered (Decision R6).</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TAB 5: CASCADE VIEW ==================== -->
+<div class="panel" id="panel-cascade">
+  <h1>Cascade View</h1>
+  <p class="subtitle">How philosophy flows down through rules into engines — color-anchored to layer of origin</p>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--L0)"></div>Originates in 00 Philosophy</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--L1)"></div>Operationalized in 01 Rulebook</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--L2U)"></div>Executed in 02 Upstream</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--L2R)"></div>Scored in 02 Review</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--L2B)"></div>Built in 02 Build</div>
+  </div>
+
+  <!-- Cascade: Principle → Rule → Engine -->
+  <h2>Tracing Key Concepts Through Layers</h2>
+
+  <div id="cascade-traces">
+    <!-- Trace 1: CPA Progression -->
+    <div class="cascade-trace" style="background:#1e293b; border-radius:10px; padding:16px; margin-bottom:12px; cursor:pointer;" onclick="toggleTrace(this)">
+      <div style="font-weight:700; font-size:14px;">▸ CPA Progression (Concrete → Pictorial → Abstract)</div>
+      <div class="trace-detail" style="display:none; margin-top:12px;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start;">
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L0-bg); color:#1e1b4b; border-left:3px solid var(--L0);">
+            <div style="font-size:10px; font-weight:700; color:var(--L0);">00 PHILOSOPHY</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>P5:</strong> CPA progression as fundamental sequence<br><strong>P6:</strong> Visual models carry meaning</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L1-bg); color:#164e63; border-left:3px solid var(--L1);">
+            <div style="font-size:10px; font-weight:700; color:var(--L1);">01 RULEBOOK</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>M-2.1–M-2.11:</strong> CPA rules in Module Rulebook<br><strong>A-2.x:</strong> CPA in Applet Rulebook</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L2R-bg); color:#881337; border-left:3px solid var(--L2R);">
+            <div style="font-size:10px; font-weight:700; color:var(--L2R);">02 REVIEW</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>Cat B (8%, T1):</strong> Pedagogical Progression & CPA<br><strong>CPA Matrix §5</strong></div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L2B-bg); color:#064e3b; border-left:3px solid var(--L2B);">
+            <div style="font-size:10px; font-weight:700; color:var(--L2B);">02 BUILD</div>
+            <div style="font-size:12px; margin-top:4px;">Per-slide CPA stage tagging<br>Representation validation checkpoints</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trace 2: Applets as Module Assets -->
+    <div class="cascade-trace" style="background:#1e293b; border-radius:10px; padding:16px; margin-bottom:12px; cursor:pointer;" onclick="toggleTrace(this)">
+      <div style="font-weight:700; font-size:14px;">▸ Applets as Module Assets (Directive 17)</div>
+      <div class="trace-detail" style="display:none; margin-top:12px;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start;">
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L0-bg); color:#1e1b4b; border-left:3px solid var(--L0);">
+            <div style="font-size:10px; font-weight:700; color:var(--L0);">00 PHILOSOPHY</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>Part 5:</strong> Applets have no independent lifecycle. Module spine is primary.</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L1-bg); color:#164e63; border-left:3px solid var(--L1);">
+            <div style="font-size:10px; font-weight:700; color:var(--L1);">01 RULEBOOK</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>Module_Applet_Contract:</strong> 10 APPLET-* defect codes<br><strong>Applet Context Slides</strong></div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L2R-bg); color:#881337; border-left:3px solid var(--L2R);">
+            <div style="font-size:10px; font-weight:700; color:var(--L2R);">02 REVIEW</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>Parent-Child architecture:</strong> Module Review dispatches to Applet Review<br>Module-Only Mode §10</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L2B-bg); color:#064e3b; border-left:3px solid var(--L2B);">
+            <div style="font-size:10px; font-weight:700; color:var(--L2B);">02 BUILD</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>Child invocation:</strong> Module Build invokes Applet Build at Phases A2/B3/C3<br>Standalone mode with pre-grounding</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trace 3: No Hard Gates -->
+    <div class="cascade-trace" style="background:#1e293b; border-radius:10px; padding:16px; margin-bottom:12px; cursor:pointer;" onclick="toggleTrace(this)">
+      <div style="font-weight:700; font-size:14px;">▸ No Hard Gates — Human Decides Everything</div>
+      <div class="trace-detail" style="display:none; margin-top:12px;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start;">
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L0-bg); color:#1e1b4b; border-left:3px solid var(--L0);">
+            <div style="font-size:10px; font-weight:700; color:var(--L0);">00 PHILOSOPHY</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>Directive 11:</strong> Everything is a defect. Human sees everything. Human decides at every gate.</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L1-bg); color:#164e63; border-left:3px solid var(--L1);">
+            <div style="font-size:10px; font-weight:700; color:var(--L1);">01 RULEBOOK</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>Tier 1/Tier 2 language:</strong> Thresholds flag, never block. T1-M rules are minimum thresholds, not hard stops.</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L2R-bg); color:#881337; border-left:3px solid var(--L2R);">
+            <div style="font-size:10px; font-weight:700; color:var(--L2R);">02 REVIEW</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>Score bands recommend</strong>, never enforce. Ship-ready/Upgradeable/Re-architect/Reframe are advisory. Human review gate is Phase 6.</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L2B-bg); color:#064e3b; border-left:3px solid var(--L2B);">
+            <div style="font-size:10px; font-weight:700; color:var(--L2B);">02 BUILD</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>Quality gates log</strong>, never halt. Missing inputs → defect logged → human decides whether to proceed or wait.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trace 4: Linguistic Verification -->
+    <div class="cascade-trace" style="background:#1e293b; border-radius:10px; padding:16px; margin-bottom:12px; cursor:pointer;" onclick="toggleTrace(this)">
+      <div style="font-weight:700; font-size:14px;">▸ Linguistic Framework & Prohibited Terms</div>
+      <div class="trace-detail" style="display:none; margin-top:12px;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start;">
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L0-bg); color:#1e1b4b; border-left:3px solid var(--L0);">
+            <div style="font-size:10px; font-weight:700; color:var(--L0);">00 PHILOSOPHY</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>P9:</strong> Structure Governs Language<br><strong>P14:</strong> Linguistic Viability</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L1-bg); color:#164e63; border-left:3px solid var(--L1);">
+            <div style="font-size:10px; font-weight:700; color:var(--L1);">01 RULEBOOK</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>Linguistic_Framework.md:</strong> GO/COND/NO-GO, 41 prohibited terms, LING-PROHIBITED-TERM defect code</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L2R-bg); color:#881337; border-left:3px solid var(--L2R);">
+            <div style="font-size:10px; font-weight:700; color:var(--L2R);">02 REVIEW</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>Cat D/Da (T1):</strong> Language & Voice scoring<br>Hard ref to Linguistic_Framework §7</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L2B-bg); color:#064e3b; border-left:3px solid var(--L2B);">
+            <div style="font-size:10px; font-weight:700; color:var(--L2B);">02 BUILD</div>
+            <div style="font-size:12px; margin-top:4px;">Prohibited terms enforcement in slide/screen construction protocols. Hard ref in both builds.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trace 5: IAS/CATF -->
+    <div class="cascade-trace" style="background:#1e293b; border-radius:10px; padding:16px; margin-bottom:12px; cursor:pointer;" onclick="toggleTrace(this)">
+      <div style="font-weight:700; font-size:14px;">▸ IAS/CATF Interaction Design</div>
+      <div class="trace-detail" style="display:none; margin-top:12px;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start;">
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L0-bg); color:#1e1b4b; border-left:3px solid var(--L0);">
+            <div style="font-size:10px; font-weight:700; color:var(--L0);">00 PHILOSOPHY</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>IAS_CATF.md:</strong> 11 interaction families, 19 cognitive actions. Defines HOW students interact with content.</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L1-bg); color:#164e63; border-left:3px solid var(--L1);">
+            <div style="font-size:10px; font-weight:700; color:var(--L1);">01 RULEBOOK</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>Applet_Rulebook A-2/A-3:</strong> IAS and CATF alignment rules<br><strong>Tropes Library:</strong> Overlay trope → IAS mapping</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L2U-bg); color:#78350f; border-left:3px solid var(--L2U);">
+            <div style="font-size:10px; font-weight:700; color:var(--L2U);">02 UPSTREAM</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>Phase 4:</strong> Interactive Landscape Scan uses IAS/CATF to map existing tools to interaction patterns</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L2B-bg); color:#064e3b; border-left:3px solid var(--L2B);">
+            <div style="font-size:10px; font-weight:700; color:var(--L2B);">02 BUILD</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>Applet Build:</strong> Per-screen IAS/CATF mapping, 6-stage learning model alignment</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trace 6: Content Types -->
+    <div class="cascade-trace" style="background:#1e293b; border-radius:10px; padding:16px; margin-bottom:12px; cursor:pointer;" onclick="toggleTrace(this)">
+      <div style="font-weight:700; font-size:14px;">▸ Content Type Differentiation (Learn / Practice / Recall / Challenge)</div>
+      <div class="trace-detail" style="display:none; margin-top:12px;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start;">
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L0-bg); color:#1e1b4b; border-left:3px solid var(--L0);">
+            <div style="font-size:10px; font-weight:700; color:var(--L0);">00 PHILOSOPHY</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>Part 4:</strong> TGAR rhythm. Each type serves a distinct pedagogical function.</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L1-bg); color:#164e63; border-left:3px solid var(--L1);">
+            <div style="font-size:10px; font-weight:700; color:var(--L1);">01 RULEBOOK</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>Content_Type_Diff:</strong> Classification guidance, scoring adjustments<br>Challenge = assessive teaching (no explicit teaching expected)</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L2R-bg); color:#881337; border-left:3px solid var(--L2R);">
+            <div style="font-size:10px; font-weight:700; color:var(--L2R);">02 REVIEW</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>§6 Content-Type Scoring Adjustments:</strong> Phase 1 classifies type → adjusts rubric expectations per type</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L2U-bg); color:#78350f; border-left:3px solid var(--L2U);">
+            <div style="font-size:10px; font-weight:700; color:var(--L2U);">02 UPSTREAM</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>Phase 1:</strong> Module type classification early in research informs all downstream spec decisions</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trace 7: Evolver -->
+    <div class="cascade-trace" style="background:#1e293b; border-radius:10px; padding:16px; margin-bottom:12px; cursor:pointer;" onclick="toggleTrace(this)">
+      <div style="font-weight:700; font-size:14px;">▸ Evolver Governance (Directive 1, Decision R6)</div>
+      <div class="trace-detail" style="display:none; margin-top:12px;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start;">
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L0-bg); color:#1e1b4b; border-left:3px solid var(--L0);">
+            <div style="font-size:10px; font-weight:700; color:var(--L0);">00 PHILOSOPHY</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>Directive 1:</strong> Evolver does NOT directly modify docs. Holds proposals in ledgers for human-validated synthesis.</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L1-bg); color:#164e63; border-left:3px solid var(--L1);">
+            <div style="font-size:10px; font-weight:700; color:var(--L1);">01 RULEBOOK</div>
+            <div style="font-size:12px; margin-top:4px;">Each doc has Evolver Governance header. Rules Change Ledger for proposals.</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--L2R-bg); color:#881337; border-left:3px solid var(--L2R);">
+            <div style="font-size:10px; font-weight:700; color:var(--L2R);">02 REVIEW</div>
+            <div style="font-size:12px; margin-top:4px;"><strong>§14:</strong> Evolver Integration — Pending_Learnings, threshold tuning, Debate Log → pattern analysis</div>
+          </div>
+          <div style="color:#64748b; align-self:center;">→</div>
+          <div style="flex:1; min-width:180px; padding:10px; border-radius:6px; background:var(--DEF-bg); color:#374151; border-left:3px solid var(--DEF);">
+            <div style="font-size:10px; font-weight:700; color:var(--DEF);">04+ DEFERRED</div>
+            <div style="font-size:12px; margin-top:4px;">Per-agent sub-evolvers + master Evolver agent. Human-triggered only (R6).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TAB 6: DEFERRED ==================== -->
+<div class="panel" id="panel-deferred">
+  <h1>Deferred to Layer 03+</h1>
+  <p class="subtitle">Placeholders, pending decisions, and forward references across all built layers</p>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>03 Schemas</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div>04 Role Agents</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>05 Orchestration</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#6b7280"></div>06–09 Later</div>
+  </div>
+
+  <h2>03_SCHEMAS — Next Up</h2>
+  <div class="deferred-grid">
+    <div class="deferred-card">
+      <div class="layer-num" style="background:#f59e0b; color:white;">03</div>
+      <div class="def-title">Visual Design Schema</div>
+      <div class="def-desc">Hard reference in both Build engines (§2). Immutable constraint defining template zones, color system, typography, spacing. NOT generated — defined once, consumed by all builds.</div>
+    </div>
+    <div class="deferred-card">
+      <div class="layer-num" style="background:#f59e0b; color:white;">03</div>
+      <div class="def-title">LO_BRIEF Schema</div>
+      <div class="def-desc">JSON/YAML field definitions for Learning Objective Briefs. Chapter Research Engine produces these; schema validates conformance.</div>
+    </div>
+    <div class="deferred-card">
+      <div class="layer-num" style="background:#f59e0b; color:white;">03</div>
+      <div class="def-title">RESEARCH_BRIEF Schema</div>
+      <div class="def-desc">Structured schema for research briefs — required sections, §applet sub-sections, misconception format, visual model recommendations.</div>
+    </div>
+    <div class="deferred-card">
+      <div class="layer-num" style="background:#f59e0b; color:white;">03</div>
+      <div class="def-title">Knowledge_Ledger Schema</div>
+      <div class="def-desc">Defines the cumulative knowledge state data structure. All 5 engines interact with this — schema must support read + update lifecycle.</div>
+    </div>
+    <div class="deferred-card">
+      <div class="layer-num" style="background:#f59e0b; color:white;">03</div>
+      <div class="def-title">BUILD_SPEC / IDEAL_BLUEPRINT Schema</div>
+      <div class="def-desc">Design document schemas. IDEAL_BLUEPRINT = pedagogical reference; BUILD_SPEC = production specification with slide/screen-level instructions.</div>
+    </div>
+    <div class="deferred-card">
+      <div class="layer-num" style="background:#f59e0b; color:white;">03</div>
+      <div class="def-title">REVIEW_REPORT Schema</div>
+      <div class="def-desc">Output schema for review engines. Defect list, per-category scores, score band classification, RA check results, Pending_Learnings.</div>
+    </div>
+    <div class="deferred-card">
+      <div class="layer-num" style="background:#f59e0b; color:white;">03</div>
+      <div class="def-title">BUILD_LOG Schema</div>
+      <div class="def-desc">Construction record schema. Consumed by reviewers (for context) and Evolver (for pattern analysis). Separate from Debate Log.</div>
+    </div>
+    <div class="deferred-card">
+      <div class="layer-num" style="background:#f59e0b; color:white;">03</div>
+      <div class="def-title">Defect Code Registry Schema</div>
+      <div class="def-desc">Unified defect code format. Module (M-DEF-*), Applet (A-DEF-*), Contract (APPLET-*), Linguistic (LING-*). 3-tier severity.</div>
+    </div>
+  </div>
+
+  <h2>04_ROLE_AGENTS</h2>
+  <div class="deferred-grid">
+    <div class="deferred-card">
+      <div class="layer-num" style="background:#ef4444; color:white;">04</div>
+      <div class="def-title">8+1 Agent Identity Specs</div>
+      <div class="def-desc">Full agent definitions: Ped, Cog, ID_Flow, ID_Grad, VD, Tea, DDD, Loc_Lang, Loc_Context + Evolver master. Scopes, system prompts, tool access, category ownership remapping.</div>
+    </div>
+    <div class="deferred-card">
+      <div class="layer-num" style="background:#ef4444; color:white;">04</div>
+      <div class="def-title">Category Ownership Remapping</div>
+      <div class="def-desc">Current 6→12 mapping becomes 8→12 (modules) and 8→8 (applets). All {{ROLE_AGENT: X}} placeholders in 02_ engines get resolved.</div>
+    </div>
+    <div class="deferred-card">
+      <div class="layer-num" style="background:#ef4444; color:white;">04</div>
+      <div class="def-title">Per-Agent Evolver Sub-Agents</div>
+      <div class="def-desc">Each of the 8 agents gets a dedicated Evolver sub-agent. Master Evolver consolidates. Human-triggered only (R6).</div>
+    </div>
+  </div>
+
+  <h2>05_ORCHESTRATION and Beyond</h2>
+  <div class="deferred-grid">
+    <div class="deferred-card">
+      <div class="layer-num" style="background:#8b5cf6; color:white;">05</div>
+      <div class="def-title">Review Orchestrator</div>
+      <div class="def-desc">Dispatch controller: parallel agent dispatch, cross-boundary flag routing, human gate management, targeted re-review.</div>
+    </div>
+    <div class="deferred-card">
+      <div class="layer-num" style="background:#8b5cf6; color:white;">05</div>
+      <div class="def-title">Build Orchestrator</div>
+      <div class="def-desc">Mode selection (A/B/C), per-slide sub-agent dispatch, child engine invocation, Module-Only overlay activation.</div>
+    </div>
+    <div class="deferred-card">
+      <div class="layer-num" style="background:#6b7280; color:white;">06</div>
+      <div class="def-title">Pipelines</div>
+      <div class="def-desc">End-to-end workflow definitions: Full Chapter Pipeline, Single Module Pipeline, Applet-Only Pipeline, Batch Review Pipeline.</div>
+    </div>
+    <div class="deferred-card">
+      <div class="layer-num" style="background:#6b7280; color:white;">07</div>
+      <div class="def-title">Skills</div>
+      <div class="def-desc">Claude Code skill definitions for each pipeline. Trigger patterns, input validation, progress tracking.</div>
+    </div>
+    <div class="deferred-card">
+      <div class="layer-num" style="background:#6b7280; color:white;">08–09</div>
+      <div class="def-title">Deployment & Maintenance</div>
+      <div class="def-desc">Deployment configs, version management, Evolver batch processing, system health monitoring.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Tab navigation
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// Cascade trace toggle
+function toggleTrace(el) {
+  const detail = el.querySelector('.trace-detail');
+  const header = el.querySelector('div:first-child');
+  if (detail.style.display === 'none') {
+    detail.style.display = 'block';
+    header.textContent = header.textContent.replace('▸', '▾');
+  } else {
+    detail.style.display = 'none';
+    header.textContent = header.textContent.replace('▾', '▸');
+  }
+}
+
+// Expandable sections
+document.querySelectorAll('.expandable').forEach(el => {
+  el.addEventListener('click', () => {
+    el.classList.toggle('open');
+    const content = el.nextElementSibling;
+    if (content) content.classList.toggle('show');
+  });
+});
+</script>
+</body>
+</html>
