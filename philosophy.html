@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Philosophy — CRLD System Catalog</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #252833;
+      --border: #2e3140;
+      --text: #e2e4e9;
+      --text2: #9ca0ab;
+      --accent: #6c8cff;
+      --accent2: #4ecdc4;
+      --green: #4ecdc4;
+      --yellow: #ffd166;
+      --red: #ef6461;
+      --purple: #b07aff;
+      --orange: #ff9f43;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--accent);
+      background: rgba(108, 140, 255, 0.1);
+    }
+
+    nav a.brand {
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 1rem;
+      margin-right: auto;
+    }
+
+    nav a.active {
+      color: var(--accent);
+      background: rgba(108, 140, 255, 0.15);
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .page-header {
+      margin-bottom: 3rem;
+    }
+
+    .page-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--accent);
+    }
+
+    .page-header p {
+      color: var(--text2);
+      font-size: 1.1rem;
+    }
+
+    .detail-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .card-header {
+      background: var(--surface2);
+      padding: 2rem;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s;
+    }
+
+    .card-header:hover {
+      background: rgba(108, 140, 255, 0.05);
+    }
+
+    .card-header h2 {
+      font-size: 1.5rem;
+      color: var(--accent);
+      margin: 0;
+    }
+
+    .expand-toggle {
+      color: var(--accent2);
+      font-size: 1.5rem;
+      transition: transform 0.3s;
+    }
+
+    .expand-toggle.open {
+      transform: rotate(180deg);
+    }
+
+    .card-content {
+      padding: 2rem;
+      display: none;
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .card-content.open {
+      display: block;
+      max-height: 2000px;
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .section-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.5rem;
+      transition: all 0.3s;
+    }
+
+    .section-item:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+
+    .section-item h3 {
+      color: var(--accent);
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-item .title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .section-item .desc {
+      font-size: 0.9rem;
+      color: var(--text2);
+      margin-bottom: 0.75rem;
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--text2);
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(78, 205, 196, 0.2);
+      color: var(--accent2);
+      padding: 0.3rem 0.8rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .content-section {
+      margin-bottom: 2rem;
+    }
+
+    .content-section h4 {
+      color: var(--accent2);
+      margin: 1.5rem 0 1rem;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .index-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .index-table thead {
+      background: var(--surface2);
+    }
+
+    .index-table th {
+      padding: 1rem;
+      text-align: left;
+      color: var(--accent);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .index-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .index-table tbody tr:hover {
+      background: var(--surface2);
+    }
+
+    .token-badge {
+      background: rgba(255, 209, 102, 0.2);
+      color: var(--yellow);
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+
+    .principles-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .principle {
+      background: var(--surface2);
+      padding: 1rem;
+      border-left: 3px solid var(--accent);
+      border-radius: 4px;
+    }
+
+    .principle-num {
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .principle-title {
+      color: var(--text);
+      font-weight: 600;
+      margin: 0.25rem 0;
+    }
+
+    p, li {
+      margin-bottom: 0.75rem;
+    }
+
+    ul {
+      margin-left: 1.5rem;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+  
+/* === NAV OVERRIDE (standardized pill style) === */
+nav { position:sticky; top:0; z-index:100; background:var(--surface); border-bottom:1px solid var(--border); padding:10px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+nav a { color:var(--text2); text-decoration:none; font-size:13px; padding:4px 10px; border-radius:6px; transition:all .2s; white-space:nowrap; }
+nav a:hover, nav a.active { color:var(--text); background:var(--surface2); }
+nav a.brand { color:var(--accent); font-weight:700; font-size:15px; margin-right:12px; }
+
+</style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="brand">CRLD System</a>
+    <a href="philosophy.html" class="active">Philosophy</a>
+    <a href="rulebooks.html">Rulebooks</a>
+    <a href="engines.html">Engines</a>
+    <a href="schemas.html">Schemas</a>
+    <a href="role-agents.html">Role Agents</a>
+    <a href="pipelines.html">Pipelines</a>
+    <a href="skills.html">Skills</a>
+    <a href="artifact-flow.html">Artifact Flow</a>
+    <a href="scoring.html">Scoring</a>
+    <a href="configuration.html">Config</a>
+    <a href="safeguards.html">Safeguards</a>
+    <a href="human-gates.html">Human Gates</a>
+    <a href="evolution.html">Evolution</a>
+    <a href="user-journeys.html">User Journeys</a>
+    <a href="audit.html">Audit</a>
+  </nav>
+
+  <main>
+    <div class="page-header">
+      <h1>Layer 00 — Philosophy</h1>
+      <p>Foundational documents defining the mission, principles, and design frameworks of ClassRoots Learning Design</p>
+    </div>
+
+    <div class="detail-card">
+      <div class="card-header" onclick="toggleCard(event)">
+        <h2>Content_Bible.md</h2>
+        <div class="expand-toggle">▼</div>
+      </div>
+      <div class="card-content">
+        <div class="content-section">
+          <p><strong>Entity Type:</strong> Philosophy | <strong>Version:</strong> 2.1 | <strong>Status:</strong> Authoritative</p>
+          <p style="margin-top: 1rem;">The foundational document defining ClassRoots' mission to eliminate the fear of mathematics and science. Contains 18 unified governing principles, TGAR (Teaching the Good—Accurate—Real) content framework, and comprehensive design philosophy.</p>
+        </div>
+
+        <div class="content-section">
+          <h4>Core Sections</h4>
+          <div class="section-grid">
+            <div class="section-item">
+              <h3>Part 1</h3>
+              <div class="title">Mission & North Star</div>
+              <div class="desc">ClassRoots mission, design for weak/good/great teachers, growth mindset foundation, north star test</div>
+              <div class="meta-row">
+                <span>~1,500 tokens</span>
+                <span class="badge">Standalone</span>
+              </div>
+            </div>
+            <div class="section-item">
+              <h3>Part 2</h3>
+              <div class="title">Voice & Facilitation</div>
+              <div class="desc">ClassRoots voice tone, facilitation model, learner autonomy, discovery-based learning</div>
+              <div class="meta-row">
+                <span>~3,200 tokens</span>
+                <span class="badge">Requires P1</span>
+              </div>
+            </div>
+            <div class="section-item">
+              <h3>Part 3</h3>
+              <div class="title">Curriculum Architecture</div>
+              <div class="desc">Curriculum scope, chapter boundaries, module granularity, learning progression design</div>
+              <div class="meta-row">
+                <span>~1,400 tokens</span>
+                <span class="badge">Standalone</span>
+              </div>
+            </div>
+            <div class="section-item">
+              <h3>Part 4</h3>
+              <div class="title">Governing Principles</div>
+              <div class="desc">18 unified principles across pedagogical domains. Longest section, requires context.</div>
+              <div class="meta-row">
+                <span class="token-badge">~6,500 tokens</span>
+                <span class="badge">Requires P1-P3</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-section">
+          <h4>18 Unified Governing Principles</h4>
+          <div class="principles-list">
+            <div class="principle">
+              <div class="principle-num">P1</div>
+              <div class="principle-title">Understanding Over Compliance</div>
+            </div>
+            <div class="principle">
+              <div class="principle-num">P2</div>
+              <div class="principle-title">Weak Teachers First</div>
+            </div>
+            <div class="principle">
+              <div class="principle-num">P3</div>
+              <div class="principle-title">Multiple Representations</div>
+            </div>
+            <div class="principle">
+              <div class="principle-num">P4</div>
+              <div class="principle-title">Concrete Before Symbolic</div>
+            </div>
+            <div class="principle">
+              <div class="principle-num">P5</div>
+              <div class="principle-title">Visual Models First</div>
+            </div>
+            <div class="principle">
+              <div class="principle-num">P6</div>
+              <div class="principle-title">Productive Struggle</div>
+            </div>
+            <div class="principle">
+              <div class="principle-num">P7</div>
+              <div class="principle-title">No Speed Pressure</div>
+            </div>
+            <div class="principle">
+              <div class="principle-num">P8</div>
+              <div class="principle-title">Mistakes as Learning</div>
+            </div>
+            <div class="principle">
+              <div class="principle-num">P9</div>
+              <div class="principle-title">Structure Governs Language</div>
+            </div>
+            <div class="principle">
+              <div class="principle-num">P10</div>
+              <div class="principle-title">Inquiry Before Instruction</div>
+            </div>
+            <div class="principle">
+              <div class="principle-num">P11</div>
+              <div class="principle-title">Pattern Recognition</div>
+            </div>
+            <div class="principle">
+              <div class="principle-num">P12</div>
+              <div class="principle-title">Constraint & Variation</div>
+            </div>
+            <div class="principle">
+              <div class="principle-num">P13</div>
+              <div class="principle-title">Adaptive Scaffolding</div>
+            </div>
+            <div class="principle">
+              <div class="principle-num">P14</div>
+              <div class="principle-title">Linguistic Viability</div>
+            </div>
+            <div class="principle">
+              <div class="principle-num">P15</div>
+              <div class="principle-title">Cultural Responsiveness</div>
+            </div>
+            <div class="principle">
+              <div class="principle-num">P16</div>
+              <div class="principle-title">Technology as Tool</div>
+            </div>
+            <div class="principle">
+              <div class="principle-num">P17</div>
+              <div class="principle-title">Transfer & Generalization</div>
+            </div>
+            <div class="principle">
+              <div class="principle-num">P18</div>
+              <div class="principle-title">Equity in Access</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-section">
+          <h4>Section Index</h4>
+          <table class="index-table">
+            <thead>
+              <tr>
+                <th>Part</th>
+                <th>Title</th>
+                <th>Tokens</th>
+                <th>Prerequisites</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Part 5</td>
+                <td>Module Philosophy</td>
+                <td>~1,650</td>
+                <td>P1-P4</td>
+                <td><span class="badge">Standalone</span></td>
+              </tr>
+              <tr>
+                <td>Part 6</td>
+                <td>Applet Philosophy</td>
+                <td>~2,600</td>
+                <td>P1-P5</td>
+                <td><span class="badge">Standalone</span></td>
+              </tr>
+              <tr>
+                <td>Part 7</td>
+                <td>Digital Delight</td>
+                <td>~1,200</td>
+                <td>P1-P6</td>
+                <td><span class="badge">Standalone</span></td>
+              </tr>
+              <tr>
+                <td>Part 8</td>
+                <td>Theoretical Foundations</td>
+                <td>~1,800</td>
+                <td>P1-P7</td>
+                <td><span class="badge">Standalone</span></td>
+              </tr>
+              <tr>
+                <td>Part 9</td>
+                <td>Anti-Patterns</td>
+                <td>~1,300</td>
+                <td>P1-P8</td>
+                <td><span class="badge">Standalone</span></td>
+              </tr>
+              <tr>
+                <td>Appendix A</td>
+                <td>Glossary</td>
+                <td>~1,900</td>
+                <td>All parts</td>
+                <td><span class="badge">Standalone</span></td>
+              </tr>
+              <tr>
+                <td>Appendix B</td>
+                <td>Cross-Document Relationships</td>
+                <td>~1,250</td>
+                <td>All parts</td>
+                <td><span class="badge">Reference</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="color: var(--text2); font-size: 0.9rem;"><strong>Note:</strong> Total file: ~24,000 tokens. Part 4 (~6,500) exceeds typical agent budgets and should be loaded in focused subsections or combined with prerequisites only. Most sections independently loadable except where noted.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="card-header" onclick="toggleCard(event)">
+        <h2>IAS_CATF.md</h2>
+        <div class="expand-toggle">▼</div>
+      </div>
+      <div class="card-content">
+        <div class="content-section">
+          <p><strong>Entity Type:</strong> Philosophy | <strong>Version:</strong> 1.0.1 | <strong>Status:</strong> Stable Reference</p>
+          <p style="margin-top: 1rem;">Technical framework defining the Interaction Archetype System (IAS) and Cognitive Action × Trigger × Feedback (CATF) model. Implements interaction and cognitive action principles for all interactive elements in CRLD content.</p>
+        </div>
+
+        <div class="content-section">
+          <h4>Core Frameworks</h4>
+          <div class="section-grid">
+            <div class="section-item">
+              <h3>IAS</h3>
+              <div class="title">11 Interaction Archetypes</div>
+              <div class="desc">Reusable patterns that reliably induce cognitive actions. Covers static slides, multimedia, and applets.</div>
+              <div class="meta-row">
+                <span>~4,530 tokens</span>
+                <span class="badge">Reference</span>
+              </div>
+            </div>
+            <div class="section-item">
+              <h3>CATF</h3>
+              <div class="title">19 Cognitive Actions</div>
+              <div class="desc">Mental operations induced by interactions: compare, predict, classify, infer, generalize, measure, test invariance, and more.</div>
+              <div class="meta-row">
+                <span>~2,190 tokens</span>
+                <span class="badge">Reference</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-section">
+          <h4>Section Structure</h4>
+          <table class="index-table">
+            <thead>
+              <tr>
+                <th>Part</th>
+                <th>Topic</th>
+                <th>Tokens</th>
+                <th>Prerequisites</th>
+                <th>Loadable</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Part 1</td>
+                <td>Anatomy of Interaction Archetype</td>
+                <td>~880</td>
+                <td>None</td>
+                <td><span class="badge">No (Req P2)</span></td>
+              </tr>
+              <tr>
+                <td>Part 2</td>
+                <td>Three Classes of Interaction</td>
+                <td>~710</td>
+                <td>Part 1</td>
+                <td><span class="badge">No (Req P3+)</span></td>
+              </tr>
+              <tr>
+                <td>Part 3</td>
+                <td>The 11 Interaction Families</td>
+                <td>~4,530</td>
+                <td>P1, P2</td>
+                <td><span class="badge">Yes</span></td>
+              </tr>
+              <tr>
+                <td>Part 4</td>
+                <td>CATF Framework</td>
+                <td>~660</td>
+                <td>Part 1</td>
+                <td><span class="badge">No (Req P5)</span></td>
+              </tr>
+              <tr>
+                <td>Part 5</td>
+                <td>The 19 Cognitive Actions</td>
+                <td>~2,190</td>
+                <td>Part 4</td>
+                <td><span class="badge">Yes</span></td>
+              </tr>
+              <tr>
+                <td>Part 6</td>
+                <td>Interaction Triggers</td>
+                <td>~2,040</td>
+                <td>P2, P5</td>
+                <td><span class="badge">Yes</span></td>
+              </tr>
+              <tr>
+                <td>Part 7</td>
+                <td>Feedback Archetypes</td>
+                <td>~1,340</td>
+                <td>P1, P5</td>
+                <td><span class="badge">Yes</span></td>
+              </tr>
+              <tr>
+                <td>Part 8</td>
+                <td>IAS + CATF in Module Slides</td>
+                <td>~1,080</td>
+                <td>P1, P5, P6</td>
+                <td><span class="badge">Yes</span></td>
+              </tr>
+              <tr>
+                <td>Part 9</td>
+                <td>IAS + CATF in Applets</td>
+                <td>~1,220</td>
+                <td>P1, P3, P5</td>
+                <td><span class="badge">Yes</span></td>
+              </tr>
+              <tr>
+                <td>Part 10</td>
+                <td>Design Implications</td>
+                <td>~1,030</td>
+                <td>All</td>
+                <td><span class="badge">Yes</span></td>
+              </tr>
+              <tr>
+                <td>Part 11</td>
+                <td>Relationships to Other Docs</td>
+                <td>~640</td>
+                <td>None</td>
+                <td><span class="badge">Yes</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="color: var(--text2); font-size: 0.9rem;"><strong>Note:</strong> Total file: ~19,180 tokens. Parts 1, 2, 4 form implicit prerequisite chain. Agents must load Part 1 and Part 2 before accessing Parts 3–10.</p>
+        </div>
+
+        <div class="content-section">
+          <h4>11 Interaction Archetype Families (Part 3)</h4>
+          <p>Canonical patterns covering all forms of interaction in CRLD content:</p>
+          <ul>
+            <li><strong>Direct Manipulation:</strong> Drag, slide, rotate, resize representations</li>
+            <li><strong>Reveal & Conceal:</strong> Hide/show, toggles, progressive disclosure</li>
+            <li><strong>Constraint & Liberation:</strong> Toggle constraints on, observe effects</li>
+            <li><strong>Prediction & Feedback:</strong> Make prediction, reveal truth, compare</li>
+            <li><strong>Parameter Sweep:</strong> Vary one parameter, observe dependent variable</li>
+            <li><strong>Comparative Tables:</strong> Side-by-side comparison of cases</li>
+            <li><strong>Decomposition:</strong> Break complex form into parts, recombine</li>
+            <li><strong>Sequencing & Ordering:</strong> Order entities by property, verify</li>
+            <li><strong>Construction:</strong> Build or draw a mathematical object</li>
+            <li><strong>Pattern Completion:</strong> Fill gaps in sequence or pattern</li>
+            <li><strong>Classification:</strong> Sort items into categories with feedback</li>
+          </ul>
+        </div>
+
+        <div class="content-section">
+          <h4>19 Cognitive Actions (Part 5)</h4>
+          <p>Mental operations induced by interactions, including: Compare, Predict, Classify, Infer cause, Generalize, Measure, Test invariance, Estimate, Verify, Optimize, Decompose, Translate, Interpret, Analyze, Synthesize, Hypothesize, Recall, Recognize, Apply.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 3rem; padding: 1.5rem; background: var(--surface); border-left: 3px solid var(--accent2); border-radius: 4px;">
+      <p><strong>Core Principle (§0):</strong> ClassRoots philosophy operationalizes through rulebooks (Layer 01), engines (Layer 02), and agents (Layer 04). All design decisions trace back to these foundational documents.</p>
+    </div>
+  </main>
+
+  <script>
+    function toggleCard(event) {
+      const header = event.currentTarget;
+      const card = header.parentElement;
+      const content = card.querySelector('.card-content');
+      const toggle = header.querySelector('.expand-toggle');
+      
+      content.classList.toggle('open');
+      toggle.classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

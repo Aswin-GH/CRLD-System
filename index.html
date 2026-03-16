@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRLD System Catalog — Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #252833;
+      --border: #2e3140;
+      --text: #e2e4e9;
+      --text2: #9ca0ab;
+      --accent: #6c8cff;
+      --accent2: #4ecdc4;
+      --green: #4ecdc4;
+      --yellow: #ffd166;
+      --red: #ef6461;
+      --purple: #b07aff;
+      --orange: #ff9f43;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--accent);
+      background: rgba(108, 140, 255, 0.1);
+    }
+
+    nav a.brand {
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 1rem;
+      margin-right: auto;
+    }
+
+    nav a.active {
+      color: var(--accent);
+      background: rgba(108, 140, 255, 0.15);
+    }
+
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.3rem;
+      color: var(--text2);
+      margin-bottom: 1rem;
+    }
+
+    .subtitle {
+      color: var(--text2);
+      font-size: 0.95rem;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin: 3rem 0;
+      padding: 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .architecture {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      margin: 3rem 0;
+    }
+
+    .architecture h2 {
+      margin-bottom: 1.5rem;
+      color: var(--accent);
+    }
+
+    .layer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .layer-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.5rem;
+      transition: all 0.3s;
+    }
+
+    .layer-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 8px 24px rgba(108, 140, 255, 0.1);
+    }
+
+    .layer-card h3 {
+      color: var(--accent2);
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .layer-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .layer-count {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--green);
+      margin: 1rem 0 0.5rem;
+    }
+
+    .layer-desc {
+      font-size: 0.85rem;
+      color: var(--text2);
+      line-height: 1.4;
+    }
+
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin: 3rem 0;
+    }
+
+    .nav-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      transition: all 0.3s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--accent);
+      box-shadow: 0 12px 32px rgba(108, 140, 255, 0.15);
+    }
+
+    .nav-card-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-card-desc {
+      font-size: 0.9rem;
+      color: var(--text2);
+      margin-bottom: 1rem;
+      flex: 1;
+    }
+
+    .nav-card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--text2);
+    }
+
+    .nav-card-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .nav-card-link:hover {
+      gap: 1rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+  
+/* === NAV OVERRIDE (standardized pill style) === */
+nav { position:sticky; top:0; z-index:100; background:var(--surface); border-bottom:1px solid var(--border); padding:10px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+nav a { color:var(--text2); text-decoration:none; font-size:13px; padding:4px 10px; border-radius:6px; transition:all .2s; white-space:nowrap; }
+nav a:hover, nav a.active { color:var(--text); background:var(--surface2); }
+nav a.brand { color:var(--accent); font-weight:700; font-size:15px; margin-right:12px; }
+
+</style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="brand active">CRLD System</a>
+    <a href="philosophy.html">Philosophy</a>
+    <a href="rulebooks.html">Rulebooks</a>
+    <a href="engines.html">Engines</a>
+    <a href="schemas.html">Schemas</a>
+    <a href="role-agents.html">Role Agents</a>
+    <a href="pipelines.html">Pipelines</a>
+    <a href="skills.html">Skills</a>
+    <a href="artifact-flow.html">Artifact Flow</a>
+    <a href="scoring.html">Scoring</a>
+    <a href="configuration.html">Config</a>
+    <a href="safeguards.html">Safeguards</a>
+    <a href="human-gates.html">Human Gates</a>
+    <a href="evolution.html">Evolution</a>
+    <a href="user-journeys.html">User Journeys</a>
+    <a href="audit.html">Audit</a>
+  </nav>
+
+  <main>
+    <div class="hero">
+      <h1>CRLD System Catalog</h1>
+      <p>ClassRoots Learning Design — Complete System Reference</p>
+      <p class="subtitle">84 files across 8 layers, 16 pages, 98% production readiness</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-value">84</div>
+        <div class="stat-label">Total Files</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">8</div>
+        <div class="stat-label">Layers</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">26</div>
+        <div class="stat-label">Role Agents</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">19</div>
+        <div class="stat-label">Schemas</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">11</div>
+        <div class="stat-label">Skills</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">5</div>
+        <div class="stat-label">Engines</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">10</div>
+        <div class="stat-label">Pipelines</div>
+      </div>
+    </div>
+
+    <div class="architecture">
+      <h2>System Architecture by Layer</h2>
+      <div class="layer-grid">
+        <div class="layer-card">
+          <h3>Layer 00</h3>
+          <div class="layer-title">Philosophy</div>
+          <div class="layer-count">3</div>
+          <div class="layer-desc">Content Bible, IAS/CATF framework, foundational principles</div>
+        </div>
+        <div class="layer-card">
+          <h3>Layer 01</h3>
+          <div class="layer-title">Rulebooks</div>
+          <div class="layer-count">9</div>
+          <div class="layer-desc">Module rules, applet rules, configuration, linguistic framework</div>
+        </div>
+        <div class="layer-card">
+          <h3>Layer 02</h3>
+          <div class="layer-title">Engines</div>
+          <div class="layer-count">6</div>
+          <div class="layer-desc">Review engines, build engine, research engine, scoring logic</div>
+        </div>
+        <div class="layer-card">
+          <h3>Layer 03</h3>
+          <div class="layer-title">Schemas</div>
+          <div class="layer-count">2</div>
+          <div class="layer-desc">19 schema definitions across 5 categories</div>
+        </div>
+        <div class="layer-card">
+          <h3>Layer 04</h3>
+          <div class="layer-title">Role Agents</div>
+          <div class="layer-count">4</div>
+          <div class="layer-desc">26 agents (5 research, 8 review, 8 build, 5 orchestrators)</div>
+        </div>
+        <div class="layer-card">
+          <h3>Layer 05</h3>
+          <div class="layer-title">Pipelines</div>
+          <div class="layer-count">7</div>
+          <div class="layer-desc">10 pipelines (P1-P10, P4 alias, P11 deferred)</div>
+        </div>
+        <div class="layer-card">
+          <h3>Layer 06</h3>
+          <div class="layer-title">Skills</div>
+          <div class="layer-count">12</div>
+          <div class="layer-desc">11 user-facing skills + 4 automatic pipelines</div>
+        </div>
+        <div class="layer-card">
+          <h3>Layer 07</h3>
+          <div class="layer-title">Deployment</div>
+          <div class="layer-count">0</div>
+          <div class="layer-desc">Reserved for deployment infrastructure</div>
+        </div>
+        <div class="layer-card">
+          <h3>Layer 08</h3>
+          <div class="layer-title">Maintenance</div>
+          <div class="layer-count">1</div>
+          <div class="layer-desc">System evolution and audit protocols</div>
+        </div>
+      </div>
+    </div>
+
+    <h2>Catalog Pages</h2>
+    <div class="nav-grid">
+      <a href="philosophy.html" class="nav-card">
+        <div class="nav-card-icon">📖</div>
+        <div class="nav-card-title">Philosophy</div>
+        <div class="nav-card-desc">Foundational principles, Content Bible, IAS/CATF framework, mission and design philosophy</div>
+        <div class="nav-card-meta">
+          <span>Layer 00</span>
+          <span>3 files</span>
+        </div>
+      </a>
+
+      <a href="rulebooks.html" class="nav-card">
+        <div class="nav-card-icon">📋</div>
+        <div class="nav-card-title">Rulebooks</div>
+        <div class="nav-card-desc">Module rules, applet rules, tropes library, content differentiation, linguistic framework</div>
+        <div class="nav-card-meta">
+          <span>Layer 01</span>
+          <span>9 files</span>
+        </div>
+      </a>
+
+      <a href="engines.html" class="nav-card">
+        <div class="nav-card-icon">⚙️</div>
+        <div class="nav-card-title">Engines</div>
+        <div class="nav-card-desc">Review engines (module, applet), build engine, research engine, scoring logic</div>
+        <div class="nav-card-meta">
+          <span>Layer 02</span>
+          <span>6 files</span>
+        </div>
+      </a>
+
+      <a href="schemas.html" class="nav-card">
+        <div class="nav-card-icon">🏗️</div>
+        <div class="nav-card-title">Schemas</div>
+        <div class="nav-card-desc">19 schema definitions: chapter-level, content artifacts, orchestrator, evolver, templates</div>
+        <div class="nav-card-meta">
+          <span>Layer 03</span>
+          <span>19 schemas</span>
+        </div>
+      </a>
+
+      <a href="role-agents.html" class="nav-card">
+        <div class="nav-card-icon">🤖</div>
+        <div class="nav-card-title">Role Agents</div>
+        <div class="nav-card-desc">26 agents across 4 teams: research, review, build, orchestration</div>
+        <div class="nav-card-meta">
+          <span>Layer 04</span>
+          <span>26 agents</span>
+        </div>
+      </a>
+
+      <a href="pipelines.html" class="nav-card">
+        <div class="nav-card-icon">🔀</div>
+        <div class="nav-card-title">Pipelines</div>
+        <div class="nav-card-desc">10 pipelines: research, review, build, batch, composite, remediation, reframe</div>
+        <div class="nav-card-meta">
+          <span>Layer 05</span>
+          <span>10 pipelines</span>
+        </div>
+      </a>
+
+      <a href="skills.html" class="nav-card">
+        <div class="nav-card-icon">✨</div>
+        <div class="nav-card-title">Skills</div>
+        <div class="nav-card-desc">11 user-facing skills: validate, research, review, build, batch operations</div>
+        <div class="nav-card-meta">
+          <span>Layer 06</span>
+          <span>11 skills</span>
+        </div>
+      </a>
+
+      <a href="artifact-flow.html" class="nav-card">
+        <div class="nav-card-icon">📦</div>
+        <div class="nav-card-title">Artifact Flow</div>
+        <div class="nav-card-desc">Data flow: inputs, outputs, handoff protocols, schema mappings</div>
+        <div class="nav-card-meta">
+          <span>Cross-Layer</span>
+          <span>Integration</span>
+        </div>
+      </a>
+
+      <a href="scoring.html" class="nav-card">
+        <div class="nav-card-icon">📊</div>
+        <div class="nav-card-title">Scoring</div>
+        <div class="nav-card-desc">Review verdict bands, tier 1 gates, scoring thresholds, category weights</div>
+        <div class="nav-card-meta">
+          <span>Cross-Layer</span>
+          <span>Configuration</span>
+        </div>
+      </a>
+
+      <a href="configuration.html" class="nav-card">
+        <div class="nav-card-icon">⚙️</div>
+        <div class="nav-card-title">Configuration</div>
+        <div class="nav-card-desc">17 sections, 30+ CONFIG keys, single source of truth for all system parameters</div>
+        <div class="nav-card-meta">
+          <span>Layer 01</span>
+          <span>17 sections</span>
+        </div>
+      </a>
+
+      <a href="safeguards.html" class="nav-card">
+        <div class="nav-card-icon">🛡️</div>
+        <div class="nav-card-title">Safeguards</div>
+        <div class="nav-card-desc">43+ safeguards across 5 categories: completeness, quality, safety, privacy, compliance</div>
+        <div class="nav-card-meta">
+          <span>Cross-Layer</span>
+          <span>Safety</span>
+        </div>
+      </a>
+
+      <a href="human-gates.html" class="nav-card">
+        <div class="nav-card-icon">👤</div>
+        <div class="nav-card-title">Human Gates</div>
+        <div class="nav-card-desc">Human decision points in pipelines, gate options, approval workflows</div>
+        <div class="nav-card-meta">
+          <span>Cross-Layer</span>
+          <span>Governance</span>
+        </div>
+      </a>
+
+      <a href="evolution.html" class="nav-card">
+        <div class="nav-card-icon">🔄</div>
+        <div class="nav-card-title">Evolution</div>
+        <div class="nav-card-desc">System Evolver role, change proposals, learning ledger, governance protocols</div>
+        <div class="nav-card-meta">
+          <span>Layer 08</span>
+          <span>Maintenance</span>
+        </div>
+      </a>
+
+      <a href="user-journeys.html" class="nav-card">
+        <div class="nav-card-icon">🗺️</div>
+        <div class="nav-card-title">User Journeys</div>
+        <div class="nav-card-desc">All 31 user stories, skill entry points, pipeline routing, learning objectives</div>
+        <div class="nav-card-meta">
+          <span>Cross-Layer</span>
+          <span>Navigation</span>
+        </div>
+      </a>
+
+      <a href="audit.html" class="nav-card">
+        <div class="nav-card-icon">✅</div>
+        <div class="nav-card-title">Audit</div>
+        <div class="nav-card-desc">Production readiness, findings status, 50/52 resolved, 98% completion</div>
+        <div class="nav-card-meta">
+          <span>Special</span>
+          <span>Audit Page</span>
+        </div>
+      </a>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuration — CRLD System Catalog</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #252833;
+      --border: #2e3140;
+      --text: #e2e4e9;
+      --text2: #9ca0ab;
+      --accent: #6c8cff;
+      --accent2: #4ecdc4;
+      --green: #4ecdc4;
+      --yellow: #ffd166;
+      --red: #ef6461;
+      --purple: #b07aff;
+      --orange: #ff9f43;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--accent);
+      background: rgba(108, 140, 255, 0.1);
+    }
+
+    nav a.brand {
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 1rem;
+      margin-right: auto;
+    }
+
+    nav a.active {
+      color: var(--accent);
+      background: rgba(108, 140, 255, 0.15);
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .page-header {
+      margin-bottom: 3rem;
+    }
+
+    .page-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--accent);
+    }
+
+    .page-header p {
+      color: var(--text2);
+      font-size: 1.1rem;
+    }
+
+    .search-box {
+      margin: 2rem 0;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .search-box input {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      font-family: inherit;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.1);
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .config-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .config-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 8px 24px rgba(108, 140, 255, 0.1);
+    }
+
+    .config-card-header {
+      background: var(--surface2);
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .config-card-header h3 {
+      color: var(--accent);
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .config-card-header .section-num {
+      color: var(--text2);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .config-card-header .subtitle {
+      color: var(--text2);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    .config-card-content {
+      padding: 1.5rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(255, 209, 102, 0.2);
+      color: var(--yellow);
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-right: 0.5rem;
+    }
+
+    .badge.critical {
+      background: rgba(239, 100, 97, 0.2);
+      color: var(--red);
+    }
+
+    .config-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .config-table thead {
+      background: rgba(108, 140, 255, 0.1);
+    }
+
+    .config-table th {
+      padding: 0.75rem;
+      text-align: left;
+      color: var(--accent);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+
+    .config-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+
+    .config-table code {
+      background: var(--bg);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      color: var(--accent2);
+      font-family: 'Courier New', monospace;
+    }
+
+    .config-table tbody tr:hover {
+      background: rgba(108, 140, 255, 0.05);
+    }
+
+    .resolution-flow {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .resolution-flow h2 {
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    .flow-step {
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .flow-step:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .flow-step-num {
+      color: var(--accent2);
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+
+    .flow-step-title {
+      color: var(--text);
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .flow-step-desc {
+      color: var(--text2);
+      font-size: 0.9rem;
+      margin-left: 1.5rem;
+    }
+
+    .note-box {
+      background: rgba(78, 205, 196, 0.1);
+      border-left: 3px solid var(--accent2);
+      padding: 1rem;
+      border-radius: 4px;
+      margin: 1.5rem 0;
+    }
+
+    .note-box strong {
+      color: var(--accent2);
+    }
+
+    p {
+      margin-bottom: 0.75rem;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      margin: 2rem 0 1rem;
+      color: var(--accent);
+    }
+
+    .breadcrumb {
+      color: var(--text2);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+  
+/* === NAV OVERRIDE (standardized pill style) === */
+nav { position:sticky; top:0; z-index:100; background:var(--surface); border-bottom:1px solid var(--border); padding:10px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+nav a { color:var(--text2); text-decoration:none; font-size:13px; padding:4px 10px; border-radius:6px; transition:all .2s; white-space:nowrap; }
+nav a:hover, nav a.active { color:var(--text); background:var(--surface2); }
+nav a.brand { color:var(--accent); font-weight:700; font-size:15px; margin-right:12px; }
+
+</style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="brand">CRLD System</a>
+    <a href="philosophy.html">Philosophy</a>
+    <a href="rulebooks.html">Rulebooks</a>
+    <a href="engines.html">Engines</a>
+    <a href="schemas.html">Schemas</a>
+    <a href="role-agents.html">Role Agents</a>
+    <a href="pipelines.html">Pipelines</a>
+    <a href="skills.html">Skills</a>
+    <a href="artifact-flow.html">Artifact Flow</a>
+    <a href="scoring.html">Scoring</a>
+    <a href="configuration.html" class="active">Config</a>
+    <a href="safeguards.html">Safeguards</a>
+    <a href="human-gates.html">Human Gates</a>
+    <a href="evolution.html">Evolution</a>
+    <a href="user-journeys.html">User Journeys</a>
+    <a href="audit.html">Audit</a>
+  </nav>
+
+  <main>
+    <div class="page-header">
+      <h1>System Configuration</h1>
+      <p>Single Source of Truth for all CRLD System Parameters</p>
+      <p style="margin-top: 0.5rem; color: var(--text2); font-size: 0.95rem;">17 sections, 30+ CONFIG keys, all numeric thresholds and behavioral switches centralized in one document</p>
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search parameters, keys, or section names..." onkeyup="filterSections()">
+    </div>
+
+    <div class="note-box">
+      <strong>Core Principle:</strong> All numeric thresholds, limits, budgets, and behavioral switches in the system derive from this file. When a value changes here, it propagates to every consumer via <code>{{CONFIG: section.parameter}}</code> inline syntax.
+    </div>
+
+    <div class="resolution-flow">
+      <h2>Configuration Resolution Chain (§1.1)</h2>
+      <div class="flow-step">
+        <span class="flow-step-num">1.</span>
+        <div class="flow-step-title">System_Configuration.md</div>
+        <div class="flow-step-desc">Single source of truth — all defaults live here</div>
+      </div>
+      <div class="flow-step">
+        <span class="flow-step-num">2.</span>
+        <div class="flow-step-title">Engines</div>
+        <div class="flow-step-desc">Reference CONFIG keys and define what parameters mean (scoring bands, thresholds, weights)</div>
+      </div>
+      <div class="flow-step">
+        <span class="flow-step-num">3.</span>
+        <div class="flow-step-title">Pipelines</div>
+        <div class="flow-step-desc">Reference CONFIG keys at phase boundaries (iteration limits, timeouts, gate options)</div>
+      </div>
+      <div class="flow-step">
+        <span class="flow-step-num">4.</span>
+        <div class="flow-step-title">Orchestrators</div>
+        <div class="flow-step-desc">Resolve CONFIG values at dispatch time, pass to agents as dispatch parameters</div>
+      </div>
+      <div class="flow-step">
+        <span class="flow-step-num">5.</span>
+        <div class="flow-step-title">Role Agents</div>
+        <div class="flow-step-desc">Do NOT load System_Configuration directly — receive resolved values from orchestrator dispatch payload</div>
+      </div>
+    </div>
+
+    <h2>All 17 Sections</h2>
+    <div class="section-grid" id="sectionGrid">
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num">§1</div>
+          <h3>How to Reference</h3>
+          <div class="subtitle">Reference syntax and dispatch contract</div>
+        </div>
+        <div class="config-card-content">
+          <p>Inline syntax: <code>{{CONFIG: section.parameter}}</code></p>
+          <p style="color: var(--text2); font-size: 0.9rem; margin-top: 1rem;">Examples: <code>{{CONFIG: scoring.verdict_ship_ready}}</code> → ≥85</p>
+          <table class="config-table">
+            <tbody>
+              <tr>
+                <td><strong>Dispatch Parameter</strong></td>
+                <td><strong>Source</strong></td>
+              </tr>
+              <tr>
+                <td><code>context_budget</code></td>
+                <td><code>context.agent_budget_min/max</code></td>
+              </tr>
+              <tr>
+                <td><code>content_type</code></td>
+                <td>Module classification</td>
+              </tr>
+              <tr>
+                <td><code>tier1_minimum</code></td>
+                <td><code>scoring.tier1_gate_minimum</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num">§2</div>
+          <h3>Token & Context Budgets</h3>
+          <div class="subtitle">Token allocation per agent and orchestrator</div>
+        </div>
+        <div class="config-card-content">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Key</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Agent min budget</td>
+                <td><code>context.agent_budget_min</code></td>
+                <td>3000</td>
+              </tr>
+              <tr>
+                <td>Agent max budget</td>
+                <td><code>context.agent_budget_max</code></td>
+                <td>6000</td>
+              </tr>
+              <tr>
+                <td>Orchestrator base</td>
+                <td><code>context.orchestrator_budget_base</code></td>
+                <td>2500</td>
+              </tr>
+              <tr>
+                <td>Orchestrator max</td>
+                <td><code>context.orchestrator_budget_max</code></td>
+                <td>3500</td>
+              </tr>
+              <tr>
+                <td>Master validation</td>
+                <td><code>context.master_validation_budget</code></td>
+                <td>1500</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num">§3</div>
+          <h3>Scoring & Verdict Thresholds</h3>
+          <div class="subtitle">Review verdict bands and gate thresholds</div>
+        </div>
+        <div class="config-card-content">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Key</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Ship-ready band</td>
+                <td><code>scoring.verdict_ship_ready</code></td>
+                <td>≥85%</td>
+              </tr>
+              <tr>
+                <td>Upgradeable floor</td>
+                <td><code>scoring.verdict_upgradeable_floor</code></td>
+                <td>70%</td>
+              </tr>
+              <tr>
+                <td>Re-architect floor</td>
+                <td><code>scoring.verdict_rearchitect_floor</code></td>
+                <td>50%</td>
+              </tr>
+              <tr>
+                <td>Tier 1 gate min</td>
+                <td><code>scoring.tier1_gate_minimum</code></td>
+                <td>70%</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="font-size: 0.85rem; color: var(--text2); margin-top: 1rem;">
+            <p><strong>Verdict bands:</strong> ≥85% Ship-ready → ≥70% Upgradeable → ≥50% Re-architect → Reframe</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num">§4</div>
+          <h3>Iteration & Loop Limits</h3>
+          <div class="subtitle">Retry and remediation boundaries</div>
+        </div>
+        <div class="config-card-content">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Key</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Remediation max</td>
+                <td><code>loops.remediation_max_iterations</code></td>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td>Reframe max</td>
+                <td><code>loops.reframe_max_per_module</code></td>
+                <td>1</td>
+              </tr>
+              <tr>
+                <td>Agent retry max</td>
+                <td><code>loops.agent_retry_max</code></td>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td>Zero-improvement escalation</td>
+                <td><code>loops.remediation_skip_on_zero_improvement</code></td>
+                <td>true</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num">§5</div>
+          <h3>Batch & Parallelization</h3>
+          <div class="subtitle">Concurrent execution and batch settings</div>
+        </div>
+        <div class="config-card-content">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Key</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Batch default mode</td>
+                <td><code>batch.default_mode</code></td>
+                <td>sequential</td>
+              </tr>
+              <tr>
+                <td>Batch parallel max</td>
+                <td><code>batch.parallel_max</code></td>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td>P8 module parallel</td>
+                <td><code>batch.p8_module_parallel</code></td>
+                <td>false</td>
+              </tr>
+              <tr>
+                <td>Child pipeline parallel</td>
+                <td><code>batch.child_pipeline_parallel</code></td>
+                <td>true</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num">§6</div>
+          <h3>Completeness & Quality Gates</h3>
+          <div class="subtitle">Artifact completion thresholds</div>
+        </div>
+        <div class="config-card-content">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Key</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Build completeness</td>
+                <td><code>quality.build_completeness</code></td>
+                <td>95%</td>
+              </tr>
+              <tr>
+                <td>Review completeness</td>
+                <td><code>quality.review_completeness</code></td>
+                <td>90%</td>
+              </tr>
+              <tr>
+                <td>Slide completion required</td>
+                <td><code>quality.slide_completion_required</code></td>
+                <td>100%</td>
+              </tr>
+              <tr>
+                <td>Handoff completeness</td>
+                <td><code>quality.handoff_completeness</code></td>
+                <td>95%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num">§7</div>
+          <h3>Timing & Timeout</h3>
+          <div class="subtitle">Execution timeouts and duration estimates</div>
+        </div>
+        <div class="config-card-content">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Key</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Agent timeout</td>
+                <td><code>timing.agent_timeout</code></td>
+                <td>120s</td>
+              </tr>
+              <tr>
+                <td>Slide build timeout</td>
+                <td><code>timing.slide_build_timeout</code></td>
+                <td>60s</td>
+              </tr>
+              <tr>
+                <td>P2 estimate</td>
+                <td><code>timing.p2_estimate</code></td>
+                <td>30–45m</td>
+              </tr>
+              <tr>
+                <td>P3 estimate</td>
+                <td><code>timing.p3_estimate</code></td>
+                <td>60m</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num">§8</div>
+          <h3>Drift & Tolerance Thresholds</h3>
+          <div class="subtitle">Acceptable deviation bounds</div>
+        </div>
+        <div class="config-card-content">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Key</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>CPA drift tolerance</td>
+                <td><code>drift.cpa_tolerance</code></td>
+                <td>0.5 units</td>
+              </tr>
+              <tr>
+                <td>Time budget tolerance</td>
+                <td><code>drift.time_budget_tolerance</code></td>
+                <td>15%</td>
+              </tr>
+              <tr>
+                <td>Vocabulary drift max</td>
+                <td><code>drift.vocabulary_drift_max</code></td>
+                <td>3 terms</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num">§9</div>
+          <h3>Curriculum & Resource Requirements</h3>
+          <div class="subtitle">Validation scope and required curricula</div>
+        </div>
+        <div class="config-card-content">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Key</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Min curricula for LO</td>
+                <td><code>curriculum.min_curricula</code></td>
+                <td>5</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="color: var(--text2); font-style: italic;">Required: Kurikulum Merdeka, CCSS, Singapore, UK National, CBSE</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num">§10</div>
+          <h3>Human Gate Configuration</h3>
+          <div class="subtitle">Gate decision options per pipeline stage</div>
+        </div>
+        <div class="config-card-content">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Gate</th>
+                <th>Key</th>
+                <th>Options</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Research</td>
+                <td><code>gates.research_options</code></td>
+                <td>APPROVE, REVISE, HOLD</td>
+              </tr>
+              <tr>
+                <td>Review</td>
+                <td><code>gates.review_options</code></td>
+                <td>ACCEPT, OVERRIDE, REMEDIATE, REFRAME, HOLD</td>
+              </tr>
+              <tr>
+                <td>Build</td>
+                <td><code>gates.build_options</code></td>
+                <td>APPROVE, REVISE, HOLD</td>
+              </tr>
+              <tr>
+                <td>Batch</td>
+                <td><code>gates.batch_options</code></td>
+                <td>APPROVE_BATCH, RE_REVIEW_SPECIFIC, HOLD</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num">§11</div>
+          <h3>Auto-Preamble Behavior</h3>
+          <div class="subtitle"><span class="badge">Research routing</span></div>
+        </div>
+        <div class="config-card-content">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Key</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Auto-preamble enabled</td>
+                <td><code>preamble.auto_enabled</code></td>
+                <td>true</td>
+              </tr>
+              <tr>
+                <td>Require LO confirmation</td>
+                <td><code>preamble.require_lo_confirmation</code></td>
+                <td>true</td>
+              </tr>
+              <tr>
+                <td>Max cost estimate</td>
+                <td><code>preamble.max_cost_tokens</code></td>
+                <td>50000</td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="font-size: 0.85rem; color: var(--text2); margin-top: 1rem;">Enables P2 Gate 0 auto-detection: if research artifacts missing, automatically route to P1.</p>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num">§12</div>
+          <h3>Content Type Override</h3>
+          <div class="subtitle">User control over content classification</div>
+        </div>
+        <div class="config-card-content">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Key</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Override allowed</td>
+                <td><code>content_type.override_allowed</code></td>
+                <td>true</td>
+              </tr>
+              <tr>
+                <td>Surface classification</td>
+                <td><code>content_type.surface_classification</code></td>
+                <td>true</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num badge">§13</div>
+          <h3>Skills Pre-Flight Validation <span class="badge">NEW</span></h3>
+          <div class="subtitle">User input validation before pipeline invocation</div>
+        </div>
+        <div class="config-card-content">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Key</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Preflight enabled</td>
+                <td><code>skills.preflight_enabled</code></td>
+                <td>true</td>
+              </tr>
+              <tr>
+                <td>Orchestrator guard</td>
+                <td><code>skills.preflight_guard</code></td>
+                <td>true</td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="font-size: 0.85rem; color: var(--text2); margin-top: 1rem;">All 11 skill files now include Pre-Flight Validation sections. Agents store validation status in <code>preflight_confirmed</code> flag.</p>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num badge">§14</div>
+          <h3>Upgrade Map Alternatives <span class="badge">NEW</span></h3>
+          <div class="subtitle">Multi-option remediation suggestions in review reports</div>
+        </div>
+        <div class="config-card-content">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Key</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Alternatives enabled</td>
+                <td><code>upgrade_map.alternatives_enabled</code></td>
+                <td>true</td>
+              </tr>
+              <tr>
+                <td>Max per operation</td>
+                <td><code>upgrade_map.max_alternatives</code></td>
+                <td>3</td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="font-size: 0.85rem; color: var(--text2); margin-top: 1rem;"><strong>Eligible categories:</strong> Tropes, Misconceptions, Digital_Delight, Interaction_Alternatives</p>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num badge">§15</div>
+          <h3>Pipeline Workspace & Checkpointing <span class="badge">NEW</span></h3>
+          <div class="subtitle">Agent output recovery and session death resilience</div>
+        </div>
+        <div class="config-card-content">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Key</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Workspace folder</td>
+                <td><code>workspace.folder_name</code></td>
+                <td>.pipeline_workspace</td>
+              </tr>
+              <tr>
+                <td>Checkpoint enabled</td>
+                <td><code>workspace.checkpoint_enabled</code></td>
+                <td>true</td>
+              </tr>
+              <tr>
+                <td>Cleanup mode</td>
+                <td><code>workspace.cleanup_mode</code></td>
+                <td>human_gate</td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="font-size: 0.85rem; color: var(--text2); margin-top: 1rem;">Agents write outputs to workspace before orchestrator collection, enabling recovery if pipeline interrupted.</p>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num">§16</div>
+          <h3>Configuration Change Protocol</h3>
+          <div class="subtitle">Governance for parameter updates</div>
+        </div>
+        <div class="config-card-content">
+          <ol style="margin-left: 1.5rem;">
+            <li><strong>Proposal:</strong> Team member proposes change via CHANGE_PROPOSAL</li>
+            <li><strong>Impact analysis:</strong> Identify all parameter consumers</li>
+            <li><strong>Gate 1:</strong> Technical review (breaks pipeline logic?)</li>
+            <li><strong>Gate 2:</strong> Human approval (system maintainer sign-off)</li>
+            <li><strong>Application:</strong> Update this file, values auto-inherit</li>
+          </ol>
+          <div class="note-box" style="margin-top: 1rem;">
+            <strong>Immutability:</strong> Values are immutable within single pipeline execution. New values apply to next invocation only.
+          </div>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num">§17</div>
+          <h3>Cross-Document References</h3>
+          <div class="subtitle">Links to consumer documentation</div>
+        </div>
+        <div class="config-card-content">
+          <p style="font-size: 0.85rem; margin-bottom: 0.75rem;">All consumers and cross-references documented in System_Configuration.md §17, including:</p>
+          <ul style="font-size: 0.85rem;">
+            <li>Module_Review_Engine scoring rubric (02_ENGINES)</li>
+            <li>Applet_Review_Engine scoring (02_ENGINES)</li>
+            <li>PIPELINE_STATE schema (03_SCHEMAS)</li>
+            <li>Pipeline INDEX (05_PIPELINES)</li>
+            <li>All orchestrators (04_ROLE_AGENTS)</li>
+            <li>AGENT_OUTPUT schema (03_SCHEMAS)</li>
+            <li>REVIEW_REPORT upgrade map (03_SCHEMAS)</li>
+            <li>All skill files (06_SKILLS)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 3rem; padding: 1.5rem; background: var(--surface); border-left: 3px solid var(--accent); border-radius: 4px;">
+      <p><strong>Document Version:</strong> 1.1 — Added §13 (Pre-Flight Validation), §14 (Upgrade Map Alternatives), §15 (Pipeline Workspace)</p>
+      <p style="margin-top: 0.5rem;"><strong>Last Updated:</strong> 2026-03-16 | All defaults reflect values from sessions 1–6 (not changed, only centralized)</p>
+    </div>
+  </main>
+
+  <script>
+    function filterSections() {
+      const input = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.config-card');
+      
+      cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        if (text.includes(input)) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

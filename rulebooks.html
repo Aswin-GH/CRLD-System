@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rulebooks — CRLD System</title>
+    <style>
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface2: #252833;
+            --border: #2e3140;
+            --text: #e2e4e9;
+            --text2: #9ca0ab;
+            --accent: #6c8cff;
+            --green: #4ecdc4;
+            --yellow: #ffd166;
+            --red: #ef6461;
+            --purple: #b07aff;
+            --orange: #ff9f43;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 2rem;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        nav a {
+            color: var(--text2);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.95rem;
+        }
+
+        nav a.brand {
+            color: var(--accent);
+            font-weight: 600;
+            margin-right: 1rem;
+        }
+
+        nav a:hover {
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text2);
+        }
+
+        .filters {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-pill {
+            padding: 0.5rem 1.25rem;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background-color: transparent;
+            color: var(--text2);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .filter-pill:hover,
+        .filter-pill.active {
+            background-color: var(--accent);
+            color: var(--bg);
+            border-color: var(--accent);
+        }
+
+        .search-box {
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background-color: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        .search-box input::placeholder {
+            color: var(--text2);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 8px 24px rgba(108, 140, 255, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .card-badge {
+            padding: 0.25rem 0.75rem;
+            background-color: var(--surface2);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: var(--green);
+            font-weight: 500;
+        }
+
+        .card-badge.tier1 {
+            color: var(--red);
+            background-color: rgba(239, 100, 97, 0.1);
+        }
+
+        .card-badge.tier2 {
+            color: var(--purple);
+            background-color: rgba(176, 122, 255, 0.1);
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: var(--text2);
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .card-description {
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text2);
+        }
+
+        .card-rules {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background-color: var(--surface2);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: var(--text2);
+        }
+
+        .card-rules strong {
+            color: var(--text);
+        }
+
+        .card-consumers {
+            font-size: 0.85rem;
+            color: var(--text2);
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .consumer-label {
+            color: var(--text);
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .highlight-card {
+            border-color: var(--yellow);
+            background: linear-gradient(135deg, var(--surface) 0%, rgba(255, 209, 102, 0.05) 100%);
+        }
+
+        .highlight-card .card-title {
+            color: var(--yellow);
+        }
+
+        .highlight-badge {
+            background-color: var(--yellow);
+            color: var(--bg);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text2);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+    
+/* === NAV OVERRIDE (standardized pill style) === */
+nav { position:sticky; top:0; z-index:100; background:var(--surface); border-bottom:1px solid var(--border); padding:10px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+nav a { color:var(--text2); text-decoration:none; font-size:13px; padding:4px 10px; border-radius:6px; transition:all .2s; white-space:nowrap; }
+nav a:hover, nav a.active { color:var(--text); background:var(--surface2); }
+nav a.brand { color:var(--accent); font-weight:700; font-size:15px; margin-right:12px; }
+
+</style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="brand">CRLD System</a>
+        <a href="philosophy.html">Philosophy</a>
+        <a href="rulebooks.html" class="active">Rulebooks</a>
+        <a href="engines.html">Engines</a>
+        <a href="schemas.html">Schemas</a>
+        <a href="role-agents.html">Role Agents</a>
+        <a href="pipelines.html">Pipelines</a>
+        <a href="skills.html">Skills</a>
+        <a href="artifact-flow.html">Artifact Flow</a>
+        <a href="scoring.html">Scoring</a>
+        <a href="configuration.html">Config</a>
+        <a href="safeguards.html">Safeguards</a>
+        <a href="human-gates.html">Human Gates</a>
+        <a href="evolution.html">Evolution</a>
+        <a href="user-journeys.html">User Journeys</a>
+        <a href="audit.html">Audit</a>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>Layer 01 — Rulebooks</h1>
+            <p>8 operational specification documents governing module and applet design</p>
+        </div>
+
+        <div class="filters">
+            <button class="filter-pill active" data-filter="all">All</button>
+            <button class="filter-pill" data-filter="tier1">Tier 1 Critical</button>
+            <button class="filter-pill" data-filter="tier2">Tier 2 Topic-Specific</button>
+            <button class="filter-pill" data-filter="section-index">Has Section Index</button>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="search" placeholder="Search by rulebook name or rule number (M-#, A-#)...">
+        </div>
+
+        <div class="grid" id="cardsGrid">
+            <!-- Cards will be inserted here -->
+        </div>
+    </div>
+
+    <footer>
+        <p>CRLD System Documentation — Layer 01 Rulebooks</p>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem;">Last updated 2026-03-15</p>
+    </footer>
+
+    <script>
+        const rulebooks = [
+            {
+                id: "module-rulebook",
+                name: "Module Rulebook",
+                lines: 2952,
+                tokens: "~35,000",
+                tier: "tier1",
+                hasIndex: true,
+                purpose: "Comprehensive rules for module design and review. Defines all M-# rules that every module must meet.",
+                rules: "20+ M-# rules across 18 parts (M-1 through M-20+)",
+                consumers: "All Rev-* agents, Module designers, Review teams",
+                highlight: true
+            },
+            {
+                id: "applet-rulebook",
+                name: "Applet Rulebook",
+                lines: 1312,
+                tokens: "~16,000",
+                tier: "tier2",
+                hasIndex: true,
+                purpose: "Rules specific to interactive applets as module assets. Defines all A-# rules for applet design.",
+                rules: "15+ A-# rules for interactive components",
+                consumers: "Rev-DDD, Applet designers, Review teams"
+            },
+            {
+                id: "content-tropes-library",
+                name: "Content Tropes Library",
+                lines: 973,
+                tokens: "~12,000",
+                tier: "tier1",
+                hasIndex: false,
+                purpose: "Canonical reference for standardized engagement and structural slide templates. Part 3.5 includes anti-fatigue rules (v1.2).",
+                rules: "7 module slide tropes + 10 overlay tropes",
+                consumers: "Rev-VD, Rev-Ped, Content designers"
+            },
+            {
+                id: "content-type-differentiation",
+                name: "Content Type Differentiation",
+                lines: 794,
+                tokens: "~10,000",
+                tier: "tier2",
+                hasIndex: false,
+                purpose: "Governs how M-# and A-# rules apply differently across Learn, Practice, Recall, and Challenge content types.",
+                rules: "Learn, Practice, Recall, Challenge emphasis variations",
+                consumers: "RA-Ped, Rev-Ped, Rev-ID, Content classifiers"
+            },
+            {
+                id: "linguistic-framework",
+                name: "Linguistic Compatibility Framework",
+                lines: 916,
+                tokens: "~11,500",
+                tier: "tier1",
+                hasIndex: false,
+                purpose: "Ensures module teaching approaches survive translation. GO/CONDITIONAL/NO-GO verification framework for linguistic viability.",
+                rules: "Notation conventions, vocabulary validation, prohibited terms",
+                consumers: "Rev-Loc, All build and review engines, Linguistic verification"
+            },
+            {
+                id: "module-applet-contract",
+                name: "Module-Applet Contract",
+                lines: 423,
+                tokens: "~5,300",
+                tier: "tier2",
+                hasIndex: false,
+                purpose: "Defines contract between modules and embedded applets. Specifies integration lifecycle, facilitation patterns, defect classification.",
+                rules: "Context/Placeholder pairing, on-screen facilitation zones",
+                consumers: "Rev-DDD, Rev-*, Bld-* agents"
+            },
+            {
+                id: "reference-library",
+                name: "Reference Library",
+                lines: 935,
+                tokens: "~12,000",
+                tier: "tier2",
+                hasIndex: false,
+                purpose: "Living catalogue of tools, products, research, and curricula. Provides evidence base and practical resources for designers.",
+                rules: "70+ keyword index entries, visual models, CPA guidance (NEW)",
+                consumers: "Module designers, RA-*, Review teams, Curriculum specialists"
+            },
+            {
+                id: "system-configuration",
+                name: "System Configuration",
+                lines: 276,
+                tokens: "~3,500",
+                tier: "tier1",
+                hasIndex: false,
+                purpose: "Single source of truth for all configurable parameters. 17 sections with 30+ CONFIG keys governing thresholds and behavioral switches.",
+                rules: "Token budgets, scoring thresholds, iteration limits, gate options",
+                consumers: "All engines, orchestrators, pipelines, agents",
+                highlight: true
+            }
+        ];
+
+        const container = document.getElementById("cardsGrid");
+        const searchInput = document.getElementById("search");
+        const filterPills = document.querySelectorAll(".filter-pill");
+
+        let activeFilter = "all";
+        let searchTerm = "";
+
+        function renderCards() {
+            container.innerHTML = "";
+            rulebooks.forEach(book => {
+                // Filter by category
+                if (activeFilter !== "all") {
+                    if (activeFilter === "tier1" && book.tier !== "tier1") return;
+                    if (activeFilter === "tier2" && book.tier !== "tier2") return;
+                    if (activeFilter === "section-index" && !book.hasIndex) return;
+                }
+
+                // Filter by search
+                if (searchTerm) {
+                    const searchStr = searchTerm.toLowerCase();
+                    if (!book.name.toLowerCase().includes(searchStr) &&
+                        !book.rules.toLowerCase().includes(searchStr)) {
+                        return;
+                    }
+                }
+
+                const card = document.createElement("div");
+                card.className = `card ${book.highlight ? "highlight-card" : ""}`;
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="card-title">${book.name}</div>
+                        <div class="card-badge ${book.tier}">
+                            ${book.tier === "tier1" ? "Tier 1 — Critical" : "Tier 2"}
+                            ${book.hasIndex ? " ✓ Index" : ""}
+                        </div>
+                    </div>
+                    <div class="card-meta">
+                        <div class="meta-item"><strong>${book.lines}</strong> lines</div>
+                        <div class="meta-item"><strong>${book.tokens}</strong> tokens</div>
+                        ${book.hasIndex ? '<div class="meta-item">✓ Section Index</div>' : ''}
+                    </div>
+                    <div class="card-description">${book.purpose}</div>
+                    <div class="card-rules">
+                        <strong>Rules defined:</strong><br>${book.rules}
+                    </div>
+                    <div class="card-consumers">
+                        <div class="consumer-label">Agent consumers:</div>
+                        ${book.consumers}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        filterPills.forEach(pill => {
+            pill.addEventListener("click", () => {
+                filterPills.forEach(p => p.classList.remove("active"));
+                pill.classList.add("active");
+                activeFilter = pill.dataset.filter;
+                renderCards();
+            });
+        });
+
+        searchInput.addEventListener("input", (e) => {
+            searchTerm = e.target.value;
+            renderCards();
+        });
+
+        renderCards();
+    </script>
+</body>
+</html>

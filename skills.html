@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skills — CRLD System Catalog</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #252833;
+      --border: #2e3140;
+      --text: #e2e4e9;
+      --text2: #9ca0ab;
+      --accent: #6c8cff;
+      --green: #4ecdc4;
+      --yellow: #ffd166;
+      --red: #ef6461;
+      --purple: #b07aff;
+      --orange: #ff9f43;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6;
+    }
+
+    /* === MAIN LAYOUT === */
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* === HEADER SECTION === */
+    .header-section {
+      margin-bottom: 60px;
+    }
+
+    .header-section h1 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .header-section h1 .layer-label {
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .header-section .subtitle {
+      font-size: 18px;
+      color: var(--text2);
+      margin-bottom: 20px;
+      max-width: 800px;
+      font-weight: 400;
+    }
+
+    .header-section .note {
+      background: var(--surface2);
+      border-left: 3px solid var(--accent);
+      padding: 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--text2);
+      max-width: 900px;
+      line-height: 1.7;
+    }
+
+    /* === STATS ROW === */
+    .stats-row {
+      display: flex;
+      gap: 30px;
+      margin-bottom: 50px;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-number {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text2);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* === FILTER & SEARCH === */
+    .filter-section {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: var(--surface2);
+      color: var(--text2);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    .filter-btn:hover {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    .filter-btn.active {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0 12px;
+      flex: 1;
+      min-width: 250px;
+      max-width: 400px;
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      color: var(--text);
+      padding: 10px 0;
+      font-size: 14px;
+      outline: none;
+      width: 100%;
+    }
+
+    .search-box input::placeholder {
+      color: var(--text2);
+    }
+
+    /* === SKILLS GRID === */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+      gap: 24px;
+      margin-bottom: 60px;
+    }
+
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      transition: all 0.2s;
+    }
+
+    .skill-card:hover {
+      border-color: var(--accent);
+      background: var(--surface2);
+    }
+
+    .skill-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .skill-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .skill-badge {
+      background: var(--accent);
+      color: var(--bg);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      letter-spacing: 0.5px;
+    }
+
+    .pipeline-badge {
+      display: inline-block;
+      background: var(--purple);
+      color: var(--bg);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      letter-spacing: 0.5px;
+    }
+
+    /* === TRIGGER COMMANDS === */
+    .trigger-section {
+      margin-bottom: 20px;
+    }
+
+    .trigger-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text2);
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .trigger-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .trigger-pill {
+      background: var(--surface2);
+      border: 1px solid var(--accent);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      white-space: nowrap;
+      flex-wrap: wrap;
+      max-width: 100%;
+      word-break: break-word;
+      line-height: 1.4;
+    }
+
+    /* === PRE-FLIGHT SECTION === */
+    .preflight-section {
+      background: rgba(107, 140, 255, 0.08);
+      border-left: 3px solid var(--accent);
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+
+    .preflight-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .preflight-list {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .preflight-list li {
+      color: var(--text2);
+      margin-bottom: 6px;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .preflight-list li:before {
+      content: '◆';
+      position: absolute;
+      left: 6px;
+      color: var(--accent);
+      font-size: 8px;
+    }
+
+    /* === CONTRACT SECTION === */
+    .contract-section {
+      background: var(--surface2);
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      font-size: 12px;
+    }
+
+    .contract-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .contract-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .contract-label {
+      color: var(--text2);
+      font-weight: 600;
+      min-width: 60px;
+    }
+
+    .contract-arrow {
+      color: var(--accent);
+      margin: 0 8px;
+      font-weight: 700;
+    }
+
+    .contract-value {
+      color: var(--text);
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      flex: 1;
+    }
+
+    /* === USER STORIES SECTION === */
+    .user-stories-section {
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      margin-top: 12px;
+    }
+
+    .user-stories-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text2);
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .user-stories-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .us-badge {
+      background: var(--green);
+      color: var(--bg);
+      padding: 4px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    /* === SYSTEM-TRIGGERED SECTION === */
+    .system-triggered-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 60px;
+    }
+
+    .system-triggered-section h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .system-trigger-note {
+      background: rgba(255, 159, 67, 0.08);
+      border-left: 3px solid var(--orange);
+      padding: 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--text2);
+      margin-bottom: 16px;
+    }
+
+    .system-triggers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .system-trigger-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 6px;
+      border-left: 3px solid var(--orange);
+    }
+
+    .system-trigger-item .us-id {
+      font-weight: 700;
+      color: var(--orange);
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .system-trigger-item .us-name {
+      color: var(--text);
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .system-trigger-item .trigger-source {
+      font-size: 12px;
+      color: var(--text2);
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    }
+
+    /* === USER STORIES BY CATEGORY === */
+    .user-stories-by-category {
+      margin-bottom: 60px;
+    }
+
+    .user-stories-by-category h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 30px;
+      color: var(--text);
+    }
+
+    .category-section {
+      margin-bottom: 40px;
+    }
+
+    .category-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .story-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 16px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .story-id {
+      background: var(--accent);
+      color: var(--bg);
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 12px;
+      white-space: nowrap;
+      height: fit-content;
+    }
+
+    .story-content {
+      flex: 1;
+    }
+
+    .story-name {
+      color: var(--text);
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .story-entry-point {
+      font-size: 13px;
+      color: var(--text2);
+    }
+
+    .story-entry-skill {
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .story-system-triggered {
+      font-style: italic;
+      color: var(--orange);
+    }
+
+    /* === FOOTER SECTION === */
+    .footer-section {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 30px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.7;
+    }
+
+    .footer-section h3 {
+      color: var(--text);
+      margin-bottom: 12px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .footer-section code {
+      background: var(--surface2);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      color: var(--accent);
+    }
+
+    .footer-section ul {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 16px;
+    }
+
+    .footer-section li {
+      padding-left: 20px;
+      position: relative;
+      margin-bottom: 8px;
+    }
+
+    .footer-section li:before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* === HIDDEN CLASS FOR FILTERING === */
+    .hidden {
+      display: none !important;
+    }
+
+    /* === NAV OVERRIDE (standardized pill style) === */
+    nav { position:sticky; top:0; z-index:100; background:var(--surface); border-bottom:1px solid var(--border); padding:10px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+    nav a { color:var(--text2); text-decoration:none; font-size:13px; padding:4px 10px; border-radius:6px; transition:all .2s; white-space:nowrap; }
+    nav a:hover, nav a.active { color:var(--text); background:var(--surface2); }
+    nav a.brand { color:var(--accent); font-weight:700; font-size:15px; margin-right:12px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="brand">CRLD System</a>
+    <a href="philosophy.html">Philosophy</a>
+    <a href="rulebooks.html">Rulebooks</a>
+    <a href="engines.html">Engines</a>
+    <a href="schemas.html">Schemas</a>
+    <a href="role-agents.html">Role Agents</a>
+    <a href="pipelines.html">Pipelines</a>
+    <a href="skills.html" class="active">Skills</a>
+    <a href="artifact-flow.html">Artifact Flow</a>
+    <a href="scoring.html">Scoring</a>
+    <a href="configuration.html">Config</a>
+    <a href="safeguards.html">Safeguards</a>
+    <a href="human-gates.html">Human Gates</a>
+    <a href="evolution.html">Evolution</a>
+    <a href="user-journeys.html">User Journeys</a>
+    <a href="audit.html">Audit</a>
+  </nav>
+
+  <main>
+    <!-- HEADER SECTION -->
+    <section class="header-section">
+      <h1>
+        <span class="layer-label">Layer 06 — Skills</span>
+        11 user-facing entry points — thin by design, smart at entry
+      </h1>
+      <p class="subtitle">Skills collect inputs, invoke pipelines, return outputs. They are entry points only — they do NOT redefine pipeline logic (D27). All skills include Pre-Flight Validation — clarifying questions before pipeline entry.</p>
+      <div class="note">
+        <strong>Architectural Note:</strong> Skills operate as thin interfaces between users and pipelines. Each skill validates prerequisites, collects necessary context through pre-flight questions, and then routes to the appropriate pipeline. Skills maintain forward-reference-only architecture (skills → Layers 00–05, no back-references).
+      </div>
+    </section>
+
+    <!-- STATS ROW -->
+    <section class="stats-row">
+      <div class="stat-item">
+        <div class="stat-number">11</div>
+        <div class="stat-label">Skills</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">31</div>
+        <div class="stat-label">User Stories</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">10</div>
+        <div class="stat-label">Pipelines Covered</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">✓</div>
+        <div class="stat-label">Pre-Flight Enabled</div>
+      </div>
+    </section>
+
+    <!-- FILTER & SEARCH -->
+    <section class="filter-section">
+      <div class="filter-buttons">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="research">Research</button>
+        <button class="filter-btn" data-filter="review">Review</button>
+        <button class="filter-btn" data-filter="build">Build</button>
+        <button class="filter-btn" data-filter="composite">Composite</button>
+      </div>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search skills by name or trigger command...">
+      </div>
+    </section>
+
+    <!-- SKILLS GRID -->
+    <section class="skills-grid" id="skillsGrid">
+      <!-- SK-1: validate-lo -->
+      <div class="skill-card" data-category="research" data-search="validate-lo validate learning objective derive lo create lo brief whats the learning objective">
+        <div class="skill-header">
+          <div class="skill-name">validate-lo</div>
+          <div class="skill-badge">SK-1</div>
+        </div>
+        <div class="pipeline-badge">P1 Phase 3.1</div>
+
+        <div class="trigger-section">
+          <span class="trigger-label">Trigger Commands</span>
+          <div class="trigger-pills">
+            <span class="trigger-pill">"validate this LO"</span>
+            <span class="trigger-pill">"derive the LO"</span>
+            <span class="trigger-pill">"create an LO brief"</span>
+            <span class="trigger-pill">"what's the LO for this topic?"</span>
+          </div>
+        </div>
+
+        <div class="preflight-section">
+          <span class="preflight-label">Pre-Flight Questions</span>
+          <ul class="preflight-list">
+            <li>Grade level?</li>
+            <li>Curriculum focus?</li>
+            <li>Textbook excerpt or concept name?</li>
+          </ul>
+        </div>
+
+        <div class="contract-section">
+          <div class="contract-row">
+            <span class="contract-label">Input</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">Concept scope or textbook excerpt</span>
+          </div>
+          <div class="contract-row">
+            <span class="contract-label">Output</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">LO_BRIEF.md</span>
+          </div>
+        </div>
+
+        <div class="user-stories-section">
+          <span class="user-stories-label">User Stories</span>
+          <div class="user-stories-list">
+            <span class="us-badge">US-3</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SK-2: deep-research -->
+      <div class="skill-card" data-category="research" data-search="deep-research research concept create research brief analyze interactive landscape selective modules">
+        <div class="skill-header">
+          <div class="skill-name">deep-research</div>
+          <div class="skill-badge">SK-2</div>
+        </div>
+        <div class="pipeline-badge">P1 Phase 3.1–3.2 <span style="margin-left:6px;background:#6c8cff22;color:#6c8cff;padding:2px 6px;border-radius:4px;font-size:10px;">+ Phase 4 selective</span></div>
+
+        <div class="trigger-section">
+          <span class="trigger-label">Trigger Commands</span>
+          <div class="trigger-pills">
+            <span class="trigger-pill">"do deep research"</span>
+            <span class="trigger-pill">"research this concept"</span>
+            <span class="trigger-pill">"create a research brief"</span>
+            <span class="trigger-pill">"analyze the interactive landscape"</span>
+            <span class="trigger-pill" style="border-color:#6c8cff;color:#6c8cff;">"research modules 5 and 7 in this chapter"</span>
+            <span class="trigger-pill" style="border-color:#6c8cff;color:#6c8cff;">"research specific modules"</span>
+          </div>
+        </div>
+
+        <div class="preflight-section">
+          <span class="preflight-label">Pre-Flight Questions</span>
+          <ul class="preflight-list">
+            <li>Which LO_BRIEF?</li>
+            <li>Specific curricula to prioritize?</li>
+            <li style="color:#6c8cff;">All modules or specific modules only? <span style="font-size:10px;background:#6c8cff22;padding:1px 5px;border-radius:3px;">NEW — selective dispatch</span></li>
+          </ul>
+        </div>
+
+        <div class="contract-section">
+          <div class="contract-row">
+            <span class="contract-label">Input</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">LO_BRIEF.md (standard) or CHAPTER_BRIEF + module IDs (selective)</span>
+          </div>
+          <div class="contract-row">
+            <span class="contract-label">Output</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">RESEARCH_BRIEF.md (8000+ words) per selected module</span>
+          </div>
+        </div>
+
+        <div class="user-stories-section">
+          <span class="user-stories-label">User Stories</span>
+          <div class="user-stories-list">
+            <span class="us-badge">US-4</span>
+            <span class="us-badge" style="background:#6c8cff22;color:#6c8cff;">US-32</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SK-3: scope-and-design -->
+      <div class="skill-card" data-category="research" data-search="scope-and-design design module create design spec scope storyboard">
+        <div class="skill-header">
+          <div class="skill-name">scope-and-design</div>
+          <div class="skill-badge">SK-3</div>
+        </div>
+        <div class="pipeline-badge">P1 Phase 3.3</div>
+
+        <div class="trigger-section">
+          <span class="trigger-label">Trigger Commands</span>
+          <div class="trigger-pills">
+            <span class="trigger-pill">"design this module"</span>
+            <span class="trigger-pill">"create a design spec"</span>
+            <span class="trigger-pill">"scope and design"</span>
+            <span class="trigger-pill">"plan the storyboard"</span>
+          </div>
+        </div>
+
+        <div class="preflight-section">
+          <span class="preflight-label">Pre-Flight Questions</span>
+          <ul class="preflight-list">
+            <li>Module or Applet?</li>
+            <li>Content type (Learn/Practice/Recall/Challenge)?</li>
+          </ul>
+        </div>
+
+        <div class="contract-section">
+          <div class="contract-row">
+            <span class="contract-label">Input</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">LO_BRIEF + RESEARCH_BRIEF</span>
+          </div>
+          <div class="contract-row">
+            <span class="contract-label">Output</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">DESIGN_SPEC.md (variants)</span>
+          </div>
+        </div>
+
+        <div class="user-stories-section">
+          <span class="user-stories-label">User Stories</span>
+          <div class="user-stories-list">
+            <span class="us-badge">US-1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SK-4: review-module -->
+      <div class="skill-card" data-category="review" data-search="review-module review module score module review pptx">
+        <div class="skill-header">
+          <div class="skill-name">review-module</div>
+          <div class="skill-badge">SK-4</div>
+        </div>
+        <div class="pipeline-badge">P2 + P1 preamble</div>
+
+        <div class="trigger-section">
+          <span class="trigger-label">Trigger Commands</span>
+          <div class="trigger-pills">
+            <span class="trigger-pill">"review this module"</span>
+            <span class="trigger-pill">"score this module"</span>
+            <span class="trigger-pill">"review my PPT"</span>
+            <span class="trigger-pill">[drop module PPTX]</span>
+          </div>
+        </div>
+
+        <div class="preflight-section">
+          <span class="preflight-label">Pre-Flight Questions</span>
+          <ul class="preflight-list">
+            <li>Which PPTX?</li>
+            <li>Existing RESEARCH_BRIEF or auto-preamble?</li>
+            <li>Content type?</li>
+          </ul>
+        </div>
+
+        <div class="contract-section">
+          <div class="contract-row">
+            <span class="contract-label">Input</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">Module PPTX</span>
+          </div>
+          <div class="contract-row">
+            <span class="contract-label">Output</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">REVIEW_REPORT.md + annotated PPTX + DOCX</span>
+          </div>
+        </div>
+
+        <div class="user-stories-section">
+          <span class="user-stories-label">User Stories</span>
+          <div class="user-stories-list">
+            <span class="us-badge">US-5</span>
+            <span class="us-badge">US-6</span>
+            <span class="us-badge">US-19</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SK-5: review-storyboard -->
+      <div class="skill-card" data-category="review" data-search="review-storyboard review applet score storyboard pptx">
+        <div class="skill-header">
+          <div class="skill-name">review-storyboard</div>
+          <div class="skill-badge">SK-5</div>
+        </div>
+        <div class="pipeline-badge">P6</div>
+
+        <div class="trigger-section">
+          <span class="trigger-label">Trigger Commands</span>
+          <div class="trigger-pills">
+            <span class="trigger-pill">"review this storyboard"</span>
+            <span class="trigger-pill">"score this storyboard"</span>
+            <span class="trigger-pill">"review my applet"</span>
+            <span class="trigger-pill">[drop storyboard PPTX]</span>
+          </div>
+        </div>
+
+        <div class="preflight-section">
+          <span class="preflight-label">Pre-Flight Questions</span>
+          <ul class="preflight-list">
+            <li>Which storyboard?</li>
+            <li>RESEARCH_BRIEF or auto-preamble?</li>
+            <li>Content type (no Recall)?</li>
+          </ul>
+        </div>
+
+        <div class="contract-section">
+          <div class="contract-row">
+            <span class="contract-label">Input</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">Storyboard PPTX</span>
+          </div>
+          <div class="contract-row">
+            <span class="contract-label">Output</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">REVIEW_REPORT.md + annotated PPTX</span>
+          </div>
+        </div>
+
+        <div class="user-stories-section">
+          <span class="user-stories-label">User Stories</span>
+          <div class="user-stories-list">
+            <span class="us-badge">US-7</span>
+            <span class="us-badge">US-23</span>
+            <span class="us-badge">US-29</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SK-6: build-module -->
+      <div class="skill-card" data-category="build" data-search="build-module build module improve module research">
+        <div class="skill-header">
+          <div class="skill-name">build-module</div>
+          <div class="skill-badge">SK-6</div>
+        </div>
+        <div class="pipeline-badge">P3 Mode A/B</div>
+
+        <div class="trigger-section">
+          <span class="trigger-label">Trigger Commands</span>
+          <div class="trigger-pills">
+            <span class="trigger-pill">"build a new module"</span>
+            <span class="trigger-pill">"improve this module with research"</span>
+          </div>
+        </div>
+
+        <div class="preflight-section">
+          <span class="preflight-label">Pre-Flight Questions</span>
+          <ul class="preflight-list">
+            <li>DESIGN_SPEC present?</li>
+            <li>Research artifacts available?</li>
+            <li>Content type?</li>
+          </ul>
+        </div>
+
+        <div class="contract-section">
+          <div class="contract-row">
+            <span class="contract-label">Input</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">DESIGN_SPEC + RESEARCH_BRIEF</span>
+          </div>
+          <div class="contract-row">
+            <span class="contract-label">Output</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">MODULE_PPTX + BUILD_LOG</span>
+          </div>
+        </div>
+
+        <div class="user-stories-section">
+          <span class="user-stories-label">User Stories</span>
+          <div class="user-stories-list">
+            <span class="us-badge">US-10</span>
+            <span class="us-badge">US-11</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SK-7: build-reviewed-module -->
+      <div class="skill-card" data-category="build" data-search="build-reviewed-module apply review fixes rebuild fast-track fix improved">
+        <div class="skill-header">
+          <div class="skill-name">build-reviewed-module</div>
+          <div class="skill-badge">SK-7</div>
+        </div>
+        <div class="pipeline-badge">P3 Mode C</div>
+
+        <div class="trigger-section">
+          <span class="trigger-label">Trigger Commands</span>
+          <div class="trigger-pills">
+            <span class="trigger-pill">"apply the review fixes"</span>
+            <span class="trigger-pill">"rebuild from review"</span>
+            <span class="trigger-pill">"fast-track fix"</span>
+            <span class="trigger-pill">"create the improved version"</span>
+          </div>
+        </div>
+
+        <div class="preflight-section">
+          <span class="preflight-label">Pre-Flight Questions</span>
+          <ul class="preflight-list">
+            <li>Which REVIEW_REPORT?</li>
+            <li>Apply all fixes or selective?</li>
+          </ul>
+        </div>
+
+        <div class="contract-section">
+          <div class="contract-row">
+            <span class="contract-label">Input</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">Original PPTX + REVIEW_REPORT</span>
+          </div>
+          <div class="contract-row">
+            <span class="contract-label">Output</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">Improved PPTX + BUILD_LOG</span>
+          </div>
+        </div>
+
+        <div class="user-stories-section">
+          <span class="user-stories-label">User Stories</span>
+          <div class="user-stories-list">
+            <span class="us-badge">US-12</span>
+            <span class="us-badge">US-13</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SK-8: build-storyboard -->
+      <div class="skill-card" data-category="build" data-search="build-storyboard build applet create applet make storyboard pptx">
+        <div class="skill-header">
+          <div class="skill-name">build-storyboard</div>
+          <div class="skill-badge">SK-8</div>
+        </div>
+        <div class="pipeline-badge">P5</div>
+
+        <div class="trigger-section">
+          <span class="trigger-label">Trigger Commands</span>
+          <div class="trigger-pills">
+            <span class="trigger-pill">"build the storyboard"</span>
+            <span class="trigger-pill">"create the applet"</span>
+            <span class="trigger-pill">"make the storyboard PPTX"</span>
+            <span class="trigger-pill">"build from design spec"</span>
+          </div>
+        </div>
+
+        <div class="preflight-section">
+          <span class="preflight-label">Pre-Flight Questions</span>
+          <ul class="preflight-list">
+            <li>DESIGN_SPEC (Applet variant)?</li>
+            <li>Target screen count?</li>
+          </ul>
+        </div>
+
+        <div class="contract-section">
+          <div class="contract-row">
+            <span class="contract-label">Input</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">DESIGN_SPEC (Applet) + RESEARCH_BRIEF</span>
+          </div>
+          <div class="contract-row">
+            <span class="contract-label">Output</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">Storyboard PPTX</span>
+          </div>
+        </div>
+
+        <div class="user-stories-section">
+          <span class="user-stories-label">User Stories</span>
+          <div class="user-stories-list">
+            <span class="us-badge">US-14</span>
+            <span class="us-badge">US-15</span>
+            <span class="us-badge">US-24</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SK-9: batch-review -->
+      <div class="skill-card" data-category="composite" data-search="batch-review batch review all files process modules">
+        <div class="skill-header">
+          <div class="skill-name">batch-review</div>
+          <div class="skill-badge">SK-9</div>
+        </div>
+        <div class="pipeline-badge">P7</div>
+
+        <div class="trigger-section">
+          <span class="trigger-label">Trigger Commands</span>
+          <div class="trigger-pills">
+            <span class="trigger-pill">"batch review"</span>
+            <span class="trigger-pill">"review all files"</span>
+            <span class="trigger-pill">"review everything in projects"</span>
+            <span class="trigger-pill">"process all modules"</span>
+          </div>
+        </div>
+
+        <div class="preflight-section">
+          <span class="preflight-label">Pre-Flight Questions</span>
+          <ul class="preflight-list">
+            <li>Which folders?</li>
+            <li>Review all or specific selection?</li>
+            <li>Parallel or sequential?</li>
+          </ul>
+        </div>
+
+        <div class="contract-section">
+          <div class="contract-row">
+            <span class="contract-label">Input</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">PROJECTS/ folder</span>
+          </div>
+          <div class="contract-row">
+            <span class="contract-label">Output</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">Per-module reports + summary</span>
+          </div>
+        </div>
+
+        <div class="user-stories-section">
+          <span class="user-stories-label">User Stories</span>
+          <div class="user-stories-list">
+            <span class="us-badge">US-8</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SK-10: research-chapter -->
+      <div class="skill-card" data-category="composite" data-search="research-chapter research chapter new chapter textbook">
+        <div class="skill-header">
+          <div class="skill-name">research-chapter</div>
+          <div class="skill-badge">SK-10</div>
+        </div>
+        <div class="pipeline-badge">P1 full_chapter</div>
+
+        <div class="trigger-section">
+          <span class="trigger-label">Trigger Commands</span>
+          <div class="trigger-pills">
+            <span class="trigger-pill">"research a new chapter"</span>
+            <span class="trigger-pill">"research chapter from textbook"</span>
+          </div>
+        </div>
+
+        <div class="preflight-section">
+          <span class="preflight-label">Pre-Flight Questions</span>
+          <ul class="preflight-list">
+            <li>Grade, chapter, topic?</li>
+            <li>Specific LOs to prioritize?</li>
+          </ul>
+        </div>
+
+        <div class="contract-section">
+          <div class="contract-row">
+            <span class="contract-label">Input</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">Textbook excerpt / chapter scope</span>
+          </div>
+          <div class="contract-row">
+            <span class="contract-label">Output</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">CHAPTER_BRIEF + N × (LO + RESEARCH_BRIEF)</span>
+          </div>
+        </div>
+
+        <div class="user-stories-section">
+          <span class="user-stories-label">User Stories</span>
+          <div class="user-stories-list">
+            <span class="us-badge">US-1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SK-11: full-chapter -->
+      <div class="skill-card" data-category="composite" data-search="full-chapter produce chapter end-to-end chapter improve source ppts">
+        <div class="skill-header">
+          <div class="skill-name">full-chapter</div>
+          <div class="skill-badge">SK-11</div>
+        </div>
+        <div class="pipeline-badge">P8 composite</div>
+
+        <div class="trigger-section">
+          <span class="trigger-label">Trigger Commands</span>
+          <div class="trigger-pills">
+            <span class="trigger-pill">"produce a whole chapter"</span>
+            <span class="trigger-pill">"end-to-end chapter"</span>
+            <span class="trigger-pill">"improve source PPTs with research"</span>
+          </div>
+        </div>
+
+        <div class="preflight-section">
+          <span class="preflight-label">Pre-Flight Questions</span>
+          <ul class="preflight-list">
+            <li>Grade, chapter, topic?</li>
+            <li>Module list?</li>
+            <li>Include applet storyboards?</li>
+          </ul>
+        </div>
+
+        <div class="contract-section">
+          <div class="contract-row">
+            <span class="contract-label">Input</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">Chapter scope</span>
+          </div>
+          <div class="contract-row">
+            <span class="contract-label">Output</span>
+            <span class="contract-arrow">→</span>
+            <span class="contract-value">Full chapter artifacts (research + review + build)</span>
+          </div>
+        </div>
+
+        <div class="user-stories-section">
+          <span class="user-stories-label">User Stories</span>
+          <div class="user-stories-list">
+            <span class="us-badge">US-17</span>
+            <span class="us-badge">US-18</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SYSTEM-TRIGGERED SECTION -->
+    <section class="system-triggered-section">
+      <h3>System-Triggered Pipelines (No Direct User Skill)</h3>
+      <div class="system-trigger-note">
+        These workflows are automatically triggered by verdict signals, child mode invocations, or pipeline state recovery. Users do not directly invoke these — they occur as internal routing decisions.
+      </div>
+      <div class="system-triggers-grid">
+        <div class="system-trigger-item">
+          <div class="us-id">US-9</div>
+          <div class="us-name">Applet review in module context</div>
+          <div class="trigger-source">P6 child mode (triggered by P2 verdict)</div>
+        </div>
+        <div class="system-trigger-item">
+          <div class="us-id">US-16</div>
+          <div class="us-name">Applet build in module context</div>
+          <div class="trigger-source">P5 child mode (triggered by P3 verdict)</div>
+        </div>
+        <div class="system-trigger-item">
+          <div class="us-id">US-20</div>
+          <div class="us-name">Remediation loop</div>
+          <div class="trigger-source">P9 (triggered by REMEDIATE verdict)</div>
+        </div>
+        <div class="system-trigger-item">
+          <div class="us-id">US-21</div>
+          <div class="us-name">Reframe loop</div>
+          <div class="trigger-source">P10 (triggered by REFRAME verdict)</div>
+        </div>
+        <div class="system-trigger-item">
+          <div class="us-id">US-22</div>
+          <div class="us-name">Pipeline resume</div>
+          <div class="trigger-source">Master Orchestrator (reads PIPELINE_STATE)</div>
+        </div>
+        <div class="system-trigger-item">
+          <div class="us-id">US-25</div>
+          <div class="us-name">Edge case: Malformed artifact</div>
+          <div class="trigger-source">P4 fallback routing</div>
+        </div>
+        <div class="system-trigger-item">
+          <div class="us-id">US-26</div>
+          <div class="us-name">Edge case: Missing context</div>
+          <div class="trigger-source">Pre-Flight auto-prompt (P1 backtrack)</div>
+        </div>
+        <div class="system-trigger-item">
+          <div class="us-id">US-27</div>
+          <div class="us-name">Edge case: Incompatible content type</div>
+          <div class="trigger-source">Pipeline gate (pre-execution validation)</div>
+        </div>
+        <div class="system-trigger-item">
+          <div class="us-id">US-28</div>
+          <div class="us-name">Edge case: Grade mismatch recovery</div>
+          <div class="trigger-source">P1 schema validator</div>
+        </div>
+        <div class="system-trigger-item">
+          <div class="us-id">US-30</div>
+          <div class="us-name">Audit trail check</div>
+          <div class="trigger-source">Safeguards layer (concurrent)</div>
+        </div>
+        <div class="system-trigger-item">
+          <div class="us-id">US-31</div>
+          <div class="us-name">Version conflict resolution</div>
+          <div class="trigger-source">Artifact Flow state reconciliation</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- USER STORIES BY CATEGORY -->
+    <section class="user-stories-by-category">
+      <h2>All 32 User Stories by Workflow</h2>
+
+      <!-- RESEARCH CATEGORY -->
+      <div class="category-section">
+        <div class="category-title">Research (US-1 to US-4, US-32)</div>
+
+        <div class="story-item">
+          <div class="story-id">US-1</div>
+          <div class="story-content">
+            <div class="story-name">Research new chapter</div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">research-chapter</span> or skill chain</div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-2</div>
+          <div class="story-content">
+            <div class="story-name">Research single module</div>
+            <div class="story-entry-point">Entry points: <span class="story-entry-skill">validate-lo</span> → <span class="story-entry-skill">deep-research</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-3</div>
+          <div class="story-content">
+            <div class="story-name">Validate a learning objective</div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">validate-lo</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-4</div>
+          <div class="story-content">
+            <div class="story-name">Deep research on a concept</div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">deep-research</span></div>
+          </div>
+        </div>
+
+        <div class="story-item" style="border-left:3px solid #6c8cff;">
+          <div class="story-id" style="color:#6c8cff;">US-32</div>
+          <div class="story-content">
+            <div class="story-name">Research selected modules after chapter planning is complete <span style="background:#6c8cff22;color:#6c8cff;padding:1px 6px;border-radius:4px;font-size:10px;margin-left:4px;">NEW</span></div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">deep-research</span> (selective mode) · P1 scope: <code>selective_modules</code> · Phase 4 only</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVIEW CATEGORY -->
+      <div class="category-section">
+        <div class="category-title">Review (US-5 to US-9)</div>
+
+        <div class="story-item">
+          <div class="story-id">US-5</div>
+          <div class="story-content">
+            <div class="story-name">Review a module</div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">review-module</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-6</div>
+          <div class="story-content">
+            <div class="story-name">Review without research (auto-preamble)</div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">review-module</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-7</div>
+          <div class="story-content">
+            <div class="story-name">Review applet standalone</div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">review-storyboard</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-8</div>
+          <div class="story-content">
+            <div class="story-name">Batch review</div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">batch-review</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-9</div>
+          <div class="story-content">
+            <div class="story-name">Applet review in module context</div>
+            <div class="story-entry-point"><span class="story-system-triggered">System-triggered (P6 child mode triggered by P2)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BUILD CATEGORY -->
+      <div class="category-section">
+        <div class="category-title">Build (US-10 to US-16)</div>
+
+        <div class="story-item">
+          <div class="story-id">US-10</div>
+          <div class="story-content">
+            <div class="story-name">Build new module</div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">build-module</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-11</div>
+          <div class="story-content">
+            <div class="story-name">Improve module with research</div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">build-module</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-12</div>
+          <div class="story-content">
+            <div class="story-name">Rebuild after review</div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">build-reviewed-module</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-13</div>
+          <div class="story-content">
+            <div class="story-name">Fast-track fix</div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">build-reviewed-module</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-14</div>
+          <div class="story-content">
+            <div class="story-name">Build new applet</div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">build-storyboard</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-15</div>
+          <div class="story-content">
+            <div class="story-name">Rebuild applet after review</div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">build-storyboard</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-16</div>
+          <div class="story-content">
+            <div class="story-name">Build applet in module context</div>
+            <div class="story-entry-point"><span class="story-system-triggered">System-triggered (P5 child mode triggered by P3)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPOSITE & LOOPS CATEGORY -->
+      <div class="category-section">
+        <div class="category-title">Composite & Loops (US-17 to US-22)</div>
+
+        <div class="story-item">
+          <div class="story-id">US-17</div>
+          <div class="story-content">
+            <div class="story-name">Full chapter (new)</div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">full-chapter</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-18</div>
+          <div class="story-content">
+            <div class="story-name">Full chapter (improve existing)</div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">full-chapter</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-19</div>
+          <div class="story-content">
+            <div class="story-name">Quick audit</div>
+            <div class="story-entry-point">Entry points: <span class="story-entry-skill">review-module</span> or <span class="story-entry-skill">batch-review</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-20</div>
+          <div class="story-content">
+            <div class="story-name">Remediation loop</div>
+            <div class="story-entry-point"><span class="story-system-triggered">System-triggered (P9, triggered by REMEDIATE verdict)</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-21</div>
+          <div class="story-content">
+            <div class="story-name">Reframe loop</div>
+            <div class="story-entry-point"><span class="story-system-triggered">System-triggered (P10, triggered by REFRAME verdict)</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-22</div>
+          <div class="story-content">
+            <div class="story-name">Resume paused pipeline</div>
+            <div class="story-entry-point"><span class="story-system-triggered">System-triggered (Master Orchestrator reads PIPELINE_STATE)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EDGE CASES CATEGORY -->
+      <div class="category-section">
+        <div class="category-title">Edge Cases & Recovery (US-23 to US-31)</div>
+
+        <div class="story-item">
+          <div class="story-id">US-23</div>
+          <div class="story-content">
+            <div class="story-name">Storyboard review with custom content type</div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">review-storyboard</span> (pre-flight validation)</div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-24</div>
+          <div class="story-content">
+            <div class="story-name">Applet build with screen count variation</div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">build-storyboard</span> (pre-flight clarification)</div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-25</div>
+          <div class="story-content">
+            <div class="story-name">Malformed artifact recovery</div>
+            <div class="story-entry-point"><span class="story-system-triggered">System-triggered (P4 fallback routing)</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-26</div>
+          <div class="story-content">
+            <div class="story-name">Missing context auto-prompt</div>
+            <div class="story-entry-point"><span class="story-system-triggered">System-triggered (Pre-Flight auto-prompt, P1 backtrack)</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-27</div>
+          <div class="story-content">
+            <div class="story-name">Incompatible content type rejection</div>
+            <div class="story-entry-point"><span class="story-system-triggered">System-triggered (Pipeline gate, pre-execution validation)</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-28</div>
+          <div class="story-content">
+            <div class="story-name">Grade mismatch recovery</div>
+            <div class="story-entry-point"><span class="story-system-triggered">System-triggered (P1 schema validator)</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-29</div>
+          <div class="story-content">
+            <div class="story-name">Applet review with nested content</div>
+            <div class="story-entry-point">Entry point: <span class="story-entry-skill">review-storyboard</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-30</div>
+          <div class="story-content">
+            <div class="story-name">Audit trail check</div>
+            <div class="story-entry-point"><span class="story-system-triggered">System-triggered (Safeguards layer, concurrent)</span></div>
+          </div>
+        </div>
+
+        <div class="story-item">
+          <div class="story-id">US-31</div>
+          <div class="story-content">
+            <div class="story-name">Version conflict resolution</div>
+            <div class="story-entry-point"><span class="story-system-triggered">System-triggered (Artifact Flow state reconciliation)</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER SECTION -->
+    <section class="footer-section">
+      <h3>Configuration & Implementation Notes</h3>
+      <ul>
+        <li><code>{{CONFIG: skills.preflight_enabled}}</code> — Global toggle for all pre-flight validation</li>
+        <li><code>preflight_confirmed: true</code> — Flag set after user answers clarifying questions</li>
+        <li><strong>Forward-reference only:</strong> Skills reference Layers 00–05 (pipeline definitions, engines, schemas, role agents, artifact flow, scoring). No back-references from pipelines to skills.</li>
+        <li><strong>Deferred:</strong> <code>evolver</code> skill (P11, in 08_MAINTENANCE) — future enhancement for pipeline adaptation</li>
+        <li><strong>Pre-Flight Pattern:</strong> All skills pause at entry, collect required context via clarifying questions, then proceed with full pipeline invocation</li>
+        <li><strong>Trigger Matching:</strong> Phrase-based detection using fuzzy matching on trigger command strings</li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    // Filter and search functionality
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const searchInput = document.getElementById('searchInput');
+    const skillCards = document.querySelectorAll('.skill-card');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applyFilters();
+      });
+    });
+
+    searchInput.addEventListener('input', applyFilters);
+
+    function applyFilters() {
+      const activeFilter = document.querySelector('.filter-btn.active').getAttribute('data-filter');
+      const searchTerm = searchInput.value.toLowerCase();
+
+      skillCards.forEach(card => {
+        const category = card.getAttribute('data-category');
+        const searchData = card.getAttribute('data-search').toLowerCase();
+
+        const matchesCategory = activeFilter === 'all' || category === activeFilter;
+        const matchesSearch = searchTerm === '' || searchData.includes(searchTerm);
+
+        if (matchesCategory && matchesSearch) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

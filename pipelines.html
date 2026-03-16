@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipelines - CRLD System</title>
+    <style>
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface2: #252833;
+            --border: #2e3140;
+            --text: #e2e4e9;
+            --text2: #9ca0ab;
+            --accent: #6c8cff;
+            --green: #4ecdc4;
+            --yellow: #ffd166;
+            --red: #ef6461;
+            --purple: #b07aff;
+            --orange: #ff9f43;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+            backdrop-filter: blur(10px);
+        }
+
+        nav a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        nav a.brand {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 1.1rem;
+            margin-right: auto;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text2);
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-pill {
+            padding: 0.5rem 1.25rem;
+            border: 1px solid var(--border);
+            background-color: var(--surface);
+            color: var(--text);
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .filter-pill:hover,
+        .filter-pill.active {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pipeline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .pipeline-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .pipeline-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 8px 24px rgba(108, 140, 255, 0.15);
+        }
+
+        .pipeline-id {
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .pipeline-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text);
+        }
+
+        .pipeline-meta {
+            display: grid;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .pipeline-meta-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .meta-label {
+            color: var(--text2);
+            min-width: 100px;
+            font-weight: 500;
+        }
+
+        .meta-value {
+            color: var(--text);
+            flex: 1;
+        }
+
+        .engine-label {
+            display: inline-block;
+            background-color: var(--surface2);
+            color: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .pipeline-features {
+            background-color: var(--surface2);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .pipeline-features .feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .pipeline-features .feature:last-child {
+            margin-bottom: 0;
+        }
+
+        .feature-dot {
+            color: var(--green);
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .table-container {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            overflow-x: auto;
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: var(--surface2);
+            color: var(--accent);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: var(--surface2);
+        }
+
+        .code-inline {
+            background-color: var(--surface2);
+            color: var(--yellow);
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .composite-path {
+            background-color: var(--surface);
+            border-left: 3px solid var(--purple);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .composite-path-id {
+            color: var(--purple);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .composite-path-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text);
+        }
+
+        .flow-diagram {
+            background-color: var(--surface2);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: var(--text2);
+            overflow-x: auto;
+            margin: 1rem 0;
+            line-height: 1.8;
+        }
+
+        .user-story-group {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .story-title {
+            font-size: 0.95rem;
+            color: var(--text2);
+            margin-bottom: 0.75rem;
+        }
+
+        .story-list {
+            list-style: none;
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .story-item {
+            padding: 0.5rem;
+            background-color: var(--surface2);
+            border-left: 2px solid var(--accent);
+            padding-left: 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.85rem;
+        }
+
+        .story-id {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .story-text {
+            color: var(--text);
+        }
+
+        .info-box {
+            background-color: var(--surface);
+            border-left: 3px solid var(--accent);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .info-box p {
+            font-size: 0.95rem;
+            color: var(--text);
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            nav {
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            nav a {
+                font-size: 0.85rem;
+            }
+
+            .pipeline-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    
+/* === NAV OVERRIDE (standardized pill style) === */
+nav { position:sticky; top:0; z-index:100; background:var(--surface); border-bottom:1px solid var(--border); padding:10px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+nav a { color:var(--text2); text-decoration:none; font-size:13px; padding:4px 10px; border-radius:6px; transition:all .2s; white-space:nowrap; }
+nav a:hover, nav a.active { color:var(--text); background:var(--surface2); }
+nav a.brand { color:var(--accent); font-weight:700; font-size:15px; margin-right:12px; }
+
+</style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="brand">CRLD System</a>
+        <a href="philosophy.html">Philosophy</a>
+        <a href="rulebooks.html">Rulebooks</a>
+        <a href="engines.html">Engines</a>
+        <a href="schemas.html">Schemas</a>
+        <a href="role-agents.html">Role Agents</a>
+        <a href="pipelines.html" class="active">Pipelines</a>
+        <a href="skills.html">Skills</a>
+        <a href="artifact-flow.html">Artifact Flow</a>
+        <a href="scoring.html">Scoring</a>
+        <a href="configuration.html">Config</a>
+        <a href="safeguards.html">Safeguards</a>
+        <a href="human-gates.html">Human Gates</a>
+        <a href="evolution.html">Evolution</a>
+        <a href="user-journeys.html">User Journeys</a>
+        <a href="audit.html">Audit</a>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>Layer 05 — Pipelines</h1>
+            <p>10 pipelines, 31 user stories, 4 composite paths</p>
+        </div>
+
+        <div class="filter-bar">
+            <div class="filter-pill active" onclick="filterPipelines('all')">All</div>
+            <div class="filter-pill" onclick="filterPipelines('research')">Research</div>
+            <div class="filter-pill" onclick="filterPipelines('review')">Review</div>
+            <div class="filter-pill" onclick="filterPipelines('build')">Build</div>
+            <div class="filter-pill" onclick="filterPipelines('composite')">Composite</div>
+            <div class="filter-pill" onclick="filterPipelines('deferred')">Deferred</div>
+        </div>
+
+        <div class="info-box">
+            <p><strong>Note on Pipeline Modes:</strong> P3 Mode C (Reviewed Rebuild) has a fast-track alias called P4. This is a user-facing shortcut only — P4 is not a separate pipeline.</p>
+        </div>
+
+        <div class="section-title">Single Pipeline Reference</div>
+
+        <div class="pipeline-grid" id="pipelineGrid">
+
+            <!-- P1: Chapter Research -->
+            <div class="pipeline-card" data-filter="all research">
+                <div class="pipeline-id">P1</div>
+                <div class="pipeline-name">Chapter Research Pipeline</div>
+                <div class="engine-label">Engine: Chapter_Research_Engine.md</div>
+                <div class="pipeline-meta">
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Orchestrator</span>
+                        <span class="meta-value">Research Orchestrator</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Skill Entry</span>
+                        <span class="meta-value"><span class="code-inline">validate-lo</span>, <span class="code-inline">deep-research</span>, <span class="code-inline">scope-and-design</span></span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Input</span>
+                        <span class="meta-value">Textbook chapter, curriculum materials</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Output</span>
+                        <span class="meta-value">CHAPTER_BRIEF, CHAPTER_LO_SEQUENCE, per-module {LO_BRIEF, RESEARCH_BRIEF, IDEAL_BLUEPRINT}, KNOWLEDGE_LEDGER</span>
+                    </div>
+                </div>
+                <div class="pipeline-features">
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>5 research agents (RA-*)</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Curriculum cross-validation protocol</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Interactive landscape scanning</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Scopes: <code>full_chapter</code>, <code>single_module</code>, <code>selective_modules</code> <span style="background:#6c8cff22;color:#6c8cff;padding:1px 6px;border-radius:4px;font-size:10px;">NEW</span></span>
+                    </div>
+                </div>
+                <div class="pipeline-user-stories" style="margin-top:8px;font-size:12px;color:#9ca0ab;">
+                    User Stories: US-1–4, <strong style="color:#6c8cff;">US-32</strong>
+                </div>
+            </div>
+
+            <!-- P2: Module Review -->
+            <div class="pipeline-card" data-filter="all review">
+                <div class="pipeline-id">P2</div>
+                <div class="pipeline-name">Module Review Pipeline</div>
+                <div class="engine-label">Engine: Module_Review_Engine.md</div>
+                <div class="pipeline-meta">
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Orchestrator</span>
+                        <span class="meta-value">Review Orchestrator</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Skill Entry</span>
+                        <span class="meta-value"><span class="code-inline">review-module</span></span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Input</span>
+                        <span class="meta-value">Module PPTX, RESEARCH_BRIEF, IDEAL_BLUEPRINT</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Output</span>
+                        <span class="meta-value">REVIEW_REPORT.md, annotated PPTX, verdict band</span>
+                    </div>
+                </div>
+                <div class="pipeline-features">
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>8 review agents (Rev-*)</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>12 scoring categories, 3-tier defect taxonomy</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Verdicts: Ship-ready / Upgradeable / Remediate / Reframe</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- P3: Module Build -->
+            <div class="pipeline-card" data-filter="all build">
+                <div class="pipeline-id">P3</div>
+                <div class="pipeline-name">Module Build Pipeline</div>
+                <div class="engine-label">Engine: Module_Build_Engine.md</div>
+                <div class="pipeline-meta">
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Orchestrator</span>
+                        <span class="meta-value">Build Orchestrator</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Skill Entry</span>
+                        <span class="meta-value"><span class="code-inline">build-module</span>, <span class="code-inline">build-reviewed-module</span></span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Modes</span>
+                        <span class="meta-value">Mode A (New), Mode B (Source-Informed), Mode C (Reviewed Rebuild)</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Input</span>
+                        <span class="meta-value">IDEAL_BLUEPRINT, RESEARCH_BRIEF, (source PPTX for B/C), (REVIEW_REPORT for C)</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Output</span>
+                        <span class="meta-value">Module PPTX, BUILD_LOG, BUILD_SPEC (derived at Phase 0)</span>
+                    </div>
+                </div>
+                <div class="pipeline-features">
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>8 build agents (Bld-*)</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>BUILD_SPEC derivation at Phase 0 (v2.1)</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>CPA progression validation, time budget enforcement</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- P4: Fast-track alias note -->
+            <div class="pipeline-card" data-filter="all build" style="opacity: 0.7;">
+                <div class="pipeline-id">P4</div>
+                <div class="pipeline-name">Fast-Track (Alias)</div>
+                <div style="color: var(--text2); font-size: 0.9rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                    <strong>This is not a separate pipeline.</strong> P4 is a user-facing alias for P3 Mode C with reduced constraint set. Entry skill: <span class="code-inline">build-reviewed-module</span>. See Module_Build_Pipeline.md §11 for details.
+                </div>
+            </div>
+
+            <!-- P5: Applet Build -->
+            <div class="pipeline-card" data-filter="all build">
+                <div class="pipeline-id">P5</div>
+                <div class="pipeline-name">Applet Build Pipeline</div>
+                <div class="engine-label">Engine: Applet_Build_Engine.md</div>
+                <div class="pipeline-meta">
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Orchestrator</span>
+                        <span class="meta-value">Build Orchestrator</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Skill Entry</span>
+                        <span class="meta-value"><span class="code-inline">build-storyboard</span></span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Modes</span>
+                        <span class="meta-value">Standalone (Mode A), Child (within P3)</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Input</span>
+                        <span class="meta-value">IDEAL_BLUEPRINT § applet, RESEARCH_BRIEF § applet, pre-grounding package</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Output</span>
+                        <span class="meta-value">Applet PPTX (screens), BUILD_LOG</span>
+                    </div>
+                </div>
+                <div class="pipeline-features">
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>8 build agents (Bld-*) at screen level</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Pre-grounding validation gate (standalone)</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Applets are module assets (Directive 17)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- P6: Applet Review -->
+            <div class="pipeline-card" data-filter="all review">
+                <div class="pipeline-id">P6</div>
+                <div class="pipeline-name">Applet Review Pipeline</div>
+                <div class="engine-label">Engine: Applet_Review_Engine.md</div>
+                <div class="pipeline-meta">
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Orchestrator</span>
+                        <span class="meta-value">Review Orchestrator</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Skill Entry</span>
+                        <span class="meta-value"><span class="code-inline">review-storyboard</span></span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Modes</span>
+                        <span class="meta-value">Standalone (pre-grounding), Child (within P2)</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Input</span>
+                        <span class="meta-value">Applet PPTX, RESEARCH_BRIEF § applet, IDEAL_BLUEPRINT § applet</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Output</span>
+                        <span class="meta-value">REVIEW_REPORT § applet, verdict</span>
+                    </div>
+                </div>
+                <div class="pipeline-features">
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>8 review agents (Rev-*) for applet scoring</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Applet-specific categories (Aa-Ha naming)</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Standalone-ready verdict (no full Ship-ready in standalone)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- P7: Batch Review -->
+            <div class="pipeline-card" data-filter="all composite">
+                <div class="pipeline-id">P7</div>
+                <div class="pipeline-name">Batch Review (Composite)</div>
+                <div class="engine-label">Engine: Module_Review_Engine.md (parallel)</div>
+                <div class="pipeline-meta">
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Orchestrator</span>
+                        <span class="meta-value">Review Orchestrator</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Skill Entry</span>
+                        <span class="meta-value"><span class="code-inline">batch-review</span></span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Input</span>
+                        <span class="meta-value">All PPTXs in scope (folder, file list, or chapter ID)</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Output</span>
+                        <span class="meta-value">Per-module REVIEW_REPORTs, BATCH_SUMMARY.md, verdict distribution</span>
+                    </div>
+                </div>
+                <div class="pipeline-features">
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Parallel P2 invocations per module</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Cross-module defect pattern analysis</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>No batch-specific scoring logic (identical to individual P2)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- P8: Full Chapter Path A/B/C -->
+            <div class="pipeline-card" data-filter="all composite">
+                <div class="pipeline-id">P8</div>
+                <div class="pipeline-name">Full Chapter Path (Composite)</div>
+                <div class="engine-label">Master Orchestrator</div>
+                <div class="pipeline-meta">
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Paths</span>
+                        <span class="meta-value">A (Research→Build→Review), B (Research→Review→Build), C (Review only)</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Skill Entry</span>
+                        <span class="meta-value">Skill chain routing</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Input</span>
+                        <span class="meta-value">Textbook chapter ± source PPTXs (depending on path)</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Output</span>
+                        <span class="meta-value">Complete chapter workspace with all artifacts</span>
+                    </div>
+                </div>
+                <div class="pipeline-features">
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Path A: New content production</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Path B: Source-informed rebuild</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Path C: Lightweight audit</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- P9: Remediate Loop -->
+            <div class="pipeline-card" data-filter="all composite">
+                <div class="pipeline-id">P9</div>
+                <div class="pipeline-name">Remediate Loop (Verdict-Driven)</div>
+                <div class="engine-label">Master Orchestrator</div>
+                <div class="pipeline-meta">
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Trigger</span>
+                        <span class="meta-value">P2 verdict: REMEDIATE (50–69% score band)</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Skill Entry</span>
+                        <span class="meta-value">Verdict loop routing</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Loop Max</span>
+                        <span class="meta-value">{{CONFIG: loops.remediation_max_iterations}} iterations</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Output</span>
+                        <span class="meta-value">Fixed module PPTX or escalation to P10</span>
+                    </div>
+                </div>
+                <div class="pipeline-features">
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Iteration 1: Priority High/Medium defects</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Iteration 2: Re-review, score improvement check</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Iteration 3: Final attempt, strict constraints</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- P10: Reframe Loop -->
+            <div class="pipeline-card" data-filter="all composite">
+                <div class="pipeline-id">P10</div>
+                <div class="pipeline-name">Reframe Loop (Scope Adjustment)</div>
+                <div class="engine-label">Master Orchestrator</div>
+                <div class="pipeline-meta">
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Trigger</span>
+                        <span class="meta-value">P2 verdict: REFRAME (&lt;50% score) or P9 exhausted</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Skill Entry</span>
+                        <span class="meta-value">Verdict loop routing</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Loop Max</span>
+                        <span class="meta-value">{{CONFIG: loops.reframe_max_per_module}} per module</span>
+                    </div>
+                    <div class="pipeline-meta-item">
+                        <span class="meta-label">Output</span>
+                        <span class="meta-value">Reframed module or terminal state (US-31)</span>
+                    </div>
+                </div>
+                <div class="pipeline-features">
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Root cause analysis + scope reframe</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Re-research via P1 (modified scope)</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-dot">•</span>
+                        <span>Terminal options: deploy with caveats, abandon, merge, escalate</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- P11: Evolver (deferred) -->
+            <div class="pipeline-card" data-filter="all deferred" style="opacity: 0.7;">
+                <div class="pipeline-id">P11</div>
+                <div class="pipeline-name">Evolver (Deferred)</div>
+                <div style="color: var(--text2); font-size: 0.9rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                    <strong>Status: Deferred to 08_MAINTENANCE layer.</strong> Async accumulation-triggered pipeline for system evolution. Processes PENDING_LEARNINGS and DEBATE_LOG to generate CHANGE_PROPOSAL and system updates.
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">Loading Mode & Checkpoint Recovery</div>
+
+        <div class="info-box">
+            <p><strong>LOADING_MODE Protocols:</strong> All orchestrators (Research, Review, Build, Master) implement LOADING_MODE on resumption. Execution state is tracked in PIPELINE_STATE artifact. If a pipeline pauses (HOLD status), it can resume from the last completed phase. Checkpoint files are stored in <span class="code-inline">.pipeline_workspace/</span> directory.</p>
+        </div>
+
+        <div class="section-title">User Stories (31 Total)</div>
+
+        <div class="user-story-group">
+            <div class="story-title">Research Stories (US-1 through US-4, US-32)</div>
+            <ul class="story-list">
+                <li class="story-item"><span class="story-id">US-1</span> <span class="story-text">Research a new chapter from a textbook</span></li>
+                <li class="story-item"><span class="story-id">US-2</span> <span class="story-text">Research a single module within an existing chapter</span></li>
+                <li class="story-item"><span class="story-id">US-3</span> <span class="story-text">Validate a learning objective</span></li>
+                <li class="story-item"><span class="story-id">US-4</span> <span class="story-text">Do deep research on a concept</span></li>
+                <li class="story-item"><span class="story-id">US-32</span> <span class="story-text">Research selected modules after chapter planning is complete</span> <span style="background:#6c8cff22;color:#6c8cff;padding:2px 8px;border-radius:4px;font-size:11px;margin-left:6px;">NEW</span></li>
+            </ul>
+        </div>
+
+        <div class="user-story-group">
+            <div class="story-title">Review Stories (US-5 through US-9)</div>
+            <ul class="story-list">
+                <li class="story-item"><span class="story-id">US-5</span> <span class="story-text">Review a module I've built</span></li>
+                <li class="story-item"><span class="story-id">US-6</span> <span class="story-text">Review a module without research artifacts (auto-preamble)</span></li>
+                <li class="story-item"><span class="story-id">US-7</span> <span class="story-text">Review an applet storyboard (standalone)</span></li>
+                <li class="story-item"><span class="story-id">US-8</span> <span class="story-text">Review all modules in my project at once</span></li>
+                <li class="story-item"><span class="story-id">US-9</span> <span class="story-text">Review an applet as part of a module review</span></li>
+            </ul>
+        </div>
+
+        <div class="user-story-group">
+            <div class="story-title">Build Stories (US-10 through US-16)</div>
+            <ul class="story-list">
+                <li class="story-item"><span class="story-id">US-10</span> <span class="story-text">Build a new module from scratch</span></li>
+                <li class="story-item"><span class="story-id">US-11</span> <span class="story-text">Improve an existing module using research</span></li>
+                <li class="story-item"><span class="story-id">US-12</span> <span class="story-text">Rebuild a module after review feedback</span></li>
+                <li class="story-item"><span class="story-id">US-13</span> <span class="story-text">Fast-track: just apply review fixes (P3 Mode C fast-track)</span></li>
+                <li class="story-item"><span class="story-id">US-14</span> <span class="story-text">Build a new applet storyboard</span></li>
+                <li class="story-item"><span class="story-id">US-15</span> <span class="story-text">Rebuild an applet after review</span></li>
+                <li class="story-item"><span class="story-id">US-16</span> <span class="story-text">Build applet as part of module build</span></li>
+            </ul>
+        </div>
+
+        <div class="user-story-group">
+            <div class="story-title">Composite & Loop Stories (US-17 through US-21)</div>
+            <ul class="story-list">
+                <li class="story-item"><span class="story-id">US-17</span> <span class="story-text">Produce a whole chapter end-to-end (new content)</span></li>
+                <li class="story-item"><span class="story-id">US-18</span> <span class="story-text">Improve source PPTs with research and review</span></li>
+                <li class="story-item"><span class="story-id">US-19</span> <span class="story-text">Quick audit of existing content, no build</span></li>
+                <li class="story-item"><span class="story-id">US-20</span> <span class="story-text">Module got REMEDIATE verdict — fix it</span></li>
+                <li class="story-item"><span class="story-id">US-21</span> <span class="story-text">Module got REFRAME verdict — what now?</span></li>
+            </ul>
+        </div>
+
+        <div class="user-story-group">
+            <div class="story-title">Edge Case & Advanced Stories (US-22 through US-31)</div>
+            <ul class="story-list">
+                <li class="story-item"><span class="story-id">US-22</span> <span class="story-text">Resume a paused pipeline (PIPELINE_STATE resume)</span></li>
+                <li class="story-item"><span class="story-id">US-23</span> <span class="story-text">Review applet with no parent module context</span></li>
+                <li class="story-item"><span class="story-id">US-24</span> <span class="story-text">Build applet with no parent module context</span></li>
+                <li class="story-item"><span class="story-id">US-25</span> <span class="story-text">Review finds research is incomplete mid-review</span></li>
+                <li class="story-item"><span class="story-id">US-26</span> <span class="story-text">Build discovers design spec is wrong during construction</span></li>
+                <li class="story-item"><span class="story-id">US-27</span> <span class="story-text">Iteration 1 of remediation shows zero improvement</span></li>
+                <li class="story-item"><span class="story-id">US-28</span> <span class="story-text">Module passes Tier 1 but overall score is 58%</span></li>
+                <li class="story-item"><span class="story-id">US-29</span> <span class="story-text">Applet review in standalone finds module integration issues</span></li>
+                <li class="story-item"><span class="story-id">US-30</span> <span class="story-text">Update research after review reveals misconception gap</span></li>
+                <li class="story-item"><span class="story-id">US-31</span> <span class="story-text">Module failed reframing — what are my options?</span></li>
+            </ul>
+        </div>
+
+        <div class="section-title">Composite Paths in Detail</div>
+
+        <div class="composite-path">
+            <div class="composite-path-id">P8 Path A</div>
+            <div class="composite-path-name">Research → Build → Review (New Content)</div>
+            <p style="margin-bottom: 1rem; font-size: 0.95rem; color: var(--text);">When to use: New content, no source PPTX, full production cycle.</p>
+            <div class="flow-diagram">Step 1: Invoke P1 (Chapter Research Pipeline)
+  ├─ Scope: full_chapter
+  ├─ Produces: CHAPTER_BRIEF, CHAPTER_LO_SEQUENCE,
+  │            per-module {LO_BRIEF, RESEARCH_BRIEF, IDEAL_BLUEPRINT}
+  └─ Human Gate: Research artifacts approved?
+
+Step 2: Invoke P3 Mode A (Module Build, New Build)
+  ├─ For each module (parallel or serial)
+  ├─ Phase 0: BUILD_SPEC derived from IDEAL_BLUEPRINT + RESEARCH_BRIEF
+  ├─ If module contains applets → P5 child mode invoked per applet
+  └─ Human Gate: Built PPTX approved?
+
+Step 3: Invoke P2 (Module Review Pipeline)
+  ├─ For each built module (parallel or serial)
+  ├─ If module contains applets → P6 child mode invoked per applet
+  ├─ Produces: REVIEW_REPORT.md + annotated PPTX per module
+  └─ Human Gate: Verdict? (APPROVE / REMEDIATE / REFRAME)</div>
+        </div>
+
+        <div class="composite-path">
+            <div class="composite-path-id">P8 Path B</div>
+            <div class="composite-path-name">Research → Review → Build (Source-Informed Rebuild)</div>
+            <p style="margin-bottom: 1rem; font-size: 0.95rem; color: var(--text);">When to use: Source PPTXs exist, want pedagogical improvement grounded in research.</p>
+            <div class="flow-diagram">Step 1: Invoke P1 with source PPTXs as reference
+  ├─ Produces: Same as Path A
+
+Step 2: Invoke P2 on source PPTXs
+  ├─ Input: Source PPTX, RESEARCH_BRIEF, IDEAL_BLUEPRINT
+  ├─ Produces: REVIEW_REPORT identifying improvement areas
+  └─ Human Gate: Review accepted?
+
+Step 3: Invoke P3 Mode B or C (Source-Informed / Reviewed Rebuild)
+  ├─ Phase 0: BUILD_SPEC derived from IDEAL_BLUEPRINT + RESEARCH_BRIEF + REVIEW_REPORT
+  ├─ Produces: Improved Module PPTX + BUILD_LOG
+  └─ Human Gate: Built PPTX approved?</div>
+        </div>
+
+        <div class="composite-path">
+            <div class="composite-path-id">P8 Path C</div>
+            <div class="composite-path-name">Review Only (Lightweight Audit)</div>
+            <p style="margin-bottom: 1rem; font-size: 0.95rem; color: var(--text);">When to use: Quick audit of existing content, no build planned.</p>
+            <div class="flow-diagram">Step 1: Invoke P2 directly
+  ├─ Input: Existing source PPTXs
+  ├─ Decision: If research artifacts missing:
+  │     Option A: Route to P1 auto-preamble (US-6)
+  │     Option B: Proceed with CONTEXT-GAP logged
+  ├─ Produces: REVIEW_REPORT per module (audit findings only)
+  └─ Human Gate: Proceed to build or halt?
+       ├─ Route to P3 → Path B flow
+       └─ HALT → audit report delivered</div>
+        </div>
+
+        <div class="info-box">
+            <p><strong>BUILD_SPEC Derivation (v2.1):</strong> BUILD_SPEC is NOT produced by P1. It is derived by the Build team at P3 Phase 0 and P5 Phase 0, just-in-time from IDEAL_BLUEPRINT + RESEARCH_BRIEF (+ REVIEW_REPORT if Mode C). This eliminates re-derivation round-trips after review updates the IDEAL_BLUEPRINT.</p>
+        </div>
+
+    </div>
+
+    <script>
+        function filterPipelines(category) {
+            const cards = document.querySelectorAll('.pipeline-card');
+            const pills = document.querySelectorAll('.filter-pill');
+
+            pills.forEach(pill => pill.classList.remove('active'));
+            event.target.classList.add('active');
+
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.filter.includes(category)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

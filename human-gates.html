@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Gates — CRLD System</title>
+    <style>
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface2: #252833;
+            --border: #2e3140;
+            --text: #e2e4e9;
+            --text2: #9ca0ab;
+            --accent: #6c8cff;
+            --green: #4ecdc4;
+            --yellow: #ffd166;
+            --red: #ef6461;
+            --purple: #b07aff;
+            --orange: #ff9f43;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 2rem;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        nav a {
+            color: var(--text2);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.95rem;
+        }
+
+        nav a.brand {
+            color: var(--accent);
+            font-weight: 600;
+            margin-right: 1rem;
+        }
+
+        nav a:hover {
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text2);
+        }
+
+        .philosophy {
+            background-color: var(--surface);
+            border-left: 4px solid var(--green);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .philosophy p {
+            font-size: 1.05rem;
+            color: var(--text);
+            line-height: 1.8;
+        }
+
+        .philosophy strong {
+            color: var(--green);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 8px 24px rgba(108, 140, 255, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .card-number {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-badge {
+            padding: 0.25rem 0.75rem;
+            background-color: var(--surface2);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: var(--text2);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .card-stage {
+            font-size: 0.9rem;
+            color: var(--accent);
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+
+        .card-content {
+            font-size: 0.95rem;
+            color: var(--text2);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .card-trigger {
+            background-color: var(--surface2);
+            border-radius: 4px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: var(--text2);
+        }
+
+        .card-trigger strong {
+            color: var(--text);
+        }
+
+        .card-options {
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .card-options strong {
+            color: var(--text);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .option-item {
+            color: var(--text2);
+            margin-bottom: 0.35rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .option-item:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text2);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+    
+/* === NAV OVERRIDE (standardized pill style) === */
+nav { position:sticky; top:0; z-index:100; background:var(--surface); border-bottom:1px solid var(--border); padding:10px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+nav a { color:var(--text2); text-decoration:none; font-size:13px; padding:4px 10px; border-radius:6px; transition:all .2s; white-space:nowrap; }
+nav a:hover, nav a.active { color:var(--text); background:var(--surface2); }
+nav a.brand { color:var(--accent); font-weight:700; font-size:15px; margin-right:12px; }
+
+</style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="brand">CRLD System</a>
+        <a href="philosophy.html">Philosophy</a>
+        <a href="rulebooks.html">Rulebooks</a>
+        <a href="engines.html">Engines</a>
+        <a href="schemas.html">Schemas</a>
+        <a href="role-agents.html">Role Agents</a>
+        <a href="pipelines.html">Pipelines</a>
+        <a href="skills.html">Skills</a>
+        <a href="artifact-flow.html">Artifact Flow</a>
+        <a href="scoring.html">Scoring</a>
+        <a href="configuration.html">Config</a>
+        <a href="safeguards.html">Safeguards</a>
+        <a href="human-gates.html" class="active">Human Gates</a>
+        <a href="evolution.html">Evolution</a>
+        <a href="user-journeys.html">User Journeys</a>
+        <a href="audit.html">Audit</a>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>Human Gates</h1>
+            <p>Decision points where human judgment overrides system</p>
+        </div>
+
+        <div class="philosophy">
+            <p><strong>Core Principle:</strong> The system recommends, humans decide. No automated override of human judgment. Every gate surfaces recommendations, options, and evidence — but final decisions rest with the human.</p>
+        </div>
+
+        <div class="section">
+            <h2>Gate Inventory</h2>
+            <div class="grid" id="gatesGrid">
+                <!-- Gates will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>CRLD System Documentation — Human Gates</p>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem;">Last updated 2026-03-15</p>
+    </footer>
+
+    <script>
+        const gates = [
+            {
+                number: "1",
+                name: "LO Confirmation Gate",
+                stage: "Research Phase (P1)",
+                userStory: "US-6",
+                trigger: "When auto-detecting Learning Objective from user input. Derived LO requires confirmation before proceeding to research.",
+                options: ["APPROVE: Proceed with auto-detected LO", "REVISE: Modify LO before research", "HOLD: Pause for manual research start"],
+                preamble: true
+            },
+            {
+                number: "2",
+                name: "Phase 6 Review Verdict",
+                stage: "Review Phase (P2)",
+                userStory: "US-5, US-6",
+                trigger: "Review orchestrator proposes verdict after Phase 6 score compilation. Score determines recommendation band (ACCEPT/REMEDIATE/REFRAME).",
+                options: ["ACCEPT: Ship module as-is", "OVERRIDE: Reject system recommendation", "REMEDIATE: Enter P9 for targeted fixes", "REFRAME: Enter P10 for scope rework"],
+                critical: true
+            },
+            {
+                number: "3",
+                name: "Phase 7 Build Approval",
+                stage: "Build Phase (P3)",
+                userStory: "US-10, US-11, US-12",
+                trigger: "Before outputting final Module PPTX. Human reviews BUILD_LOG and constructed slides.",
+                options: ["APPROVE: Accept build output", "REVISE: Request modifications before release", "HOLD: Pause for human review"],
+                critical: false
+            },
+            {
+                number: "4",
+                name: "Batch Scope Confirmation",
+                stage: "Batch Review (P7)",
+                userStory: "US-19",
+                trigger: "User specifies which modules to review in a batch. System does not pre-select scope — human decides.",
+                options: ["APPROVE: Proceed with selected scope", "MODIFY: Adjust module selection", "HOLD: Change review strategy"],
+                critical: false
+            },
+            {
+                number: "5",
+                name: "Evolver Gate 1 (Technical Review)",
+                stage: "System Evolution (P11)",
+                userStory: "System change proposal",
+                trigger: "Evolver proposes system amendment (rulebook, schema, configuration). Automated technical validation of change logic.",
+                options: ["PASS: Advance to Gate 2", "REQUEST_REVISIONS: Refine proposal logic", "HALT: Block change due to technical issues"],
+                critical: true
+            },
+            {
+                number: "6",
+                name: "Evolver Gate 2 (Human Approval)",
+                stage: "System Evolution (P11)",
+                userStory: "System change proposal",
+                trigger: "Final human sign-off on change proposal. Human reviews evidence and decides if change is warranted.",
+                options: ["APPROVE: Commit change to system", "REQUEST_REVISIONS: Request evidence review", "REJECT: Decline proposed change"],
+                critical: true
+            },
+            {
+                number: "7",
+                name: "Pre-Flight Validation",
+                stage: "Skill Entry (All pipelines)",
+                userStory: "US-1 through US-31",
+                trigger: "Before pipeline invocation. Clarifying questions if user inputs are ambiguous or incomplete.",
+                options: ["CONFIRM: Proceed with clarified inputs", "REVISE: Modify inputs", "CANCEL: Restart skill"],
+                new: true
+            },
+            {
+                number: "8",
+                name: "Workspace Cleanup Gate",
+                stage: "Pipeline Completion",
+                userStory: "Mid-session recovery",
+                trigger: "After pipeline completes. User approves deletion of .pipeline_workspace/ files (or keeps for recovery).",
+                options: ["DELETE: Remove workspace files", "KEEP: Retain for recovery", "REVIEW: Inspect workspace contents first"],
+                new: true
+            },
+            {
+                number: "9",
+                name: "Auto-Preamble Cost Warning",
+                stage: "Research Phase (P1)",
+                userStory: "US-6",
+                trigger: "When estimated preamble token cost exceeds threshold. Warning before proceeding with auto-research.",
+                options: ["PROCEED: Accept research cost", "CANCEL: Skip auto-preamble", "CUSTOMIZE: Set token budget"],
+                config: "preamble.max_cost_tokens"
+            },
+            {
+                number: "10",
+                name: "Upgrade Map Selection",
+                stage: "Review Phase (P2)",
+                userStory: "US-5, US-6",
+                trigger: "Multiple fix alternatives offered for review defects. Human chooses between design trade-offs.",
+                options: ["Option A: Alternative approach 1", "Option B: Alternative approach 2", "Option C: Alternative approach 3 (if available)"],
+                new: true
+            }
+        ];
+
+        const container = document.getElementById("gatesGrid");
+
+        gates.forEach(gate => {
+            const card = document.createElement("div");
+            card.className = "card";
+
+            let badges = '';
+            if (gate.preamble) badges += '<span class="card-badge">Auto-Preamble</span>';
+            if (gate.critical) badges += '<span class="card-badge">Critical</span>';
+            if (gate.new) badges += '<span class="card-badge">NEW</span>';
+
+            let configHtml = '';
+            if (gate.config) configHtml = `<div class="card-trigger"><strong>Config:</strong> {{${gate.config}}}</div>`;
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <div>
+                        <div class="card-number">Gate ${gate.number}</div>
+                        <div class="card-title">${gate.name}</div>
+                    </div>
+                    <div>${badges}</div>
+                </div>
+                <div class="card-stage">${gate.stage}</div>
+                <div class="card-content">${gate.trigger}</div>
+                ${configHtml}
+                <div class="card-options">
+                    <strong>Options available:</strong>
+                    ${gate.options.map(opt => `<div class="option-item">${opt}</div>`).join('')}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    </script>
+</body>
+</html>

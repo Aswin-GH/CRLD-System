@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engines - CRLD System</title>
+    <style>
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface2: #252833;
+            --border: #2e3140;
+            --text: #e2e4e9;
+            --text2: #9ca0ab;
+            --accent: #6c8cff;
+            --green: #4ecdc4;
+            --yellow: #ffd166;
+            --red: #ef6461;
+            --purple: #b07aff;
+            --orange: #ff9f43;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+            backdrop-filter: blur(10px);
+        }
+
+        nav a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        nav a.brand {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 1.1rem;
+            margin-right: auto;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text2);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .engine-grid {
+            display: grid;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .engine-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .engine-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 12px 32px rgba(108, 140, 255, 0.15);
+        }
+
+        .engine-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .engine-title {
+            flex: 1;
+        }
+
+        .engine-title h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .engine-file {
+            font-size: 0.9rem;
+            color: var(--text2);
+            font-family: monospace;
+            background-color: var(--surface2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .engine-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .meta-block {
+            background-color: var(--surface2);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border-left: 3px solid var(--accent);
+        }
+
+        .meta-label {
+            font-size: 0.8rem;
+            color: var(--text2);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .meta-value {
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: var(--accent);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .engine-description {
+            background-color: var(--surface2);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 3px solid var(--accent);
+        }
+
+        .engine-description h3 {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            color: var(--text);
+        }
+
+        .engine-description p {
+            font-size: 0.95rem;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+        }
+
+        .engine-description p:last-child {
+            margin-bottom: 0;
+        }
+
+        .agent-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.75rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .agent-item {
+            background-color: var(--surface);
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            border-left: 2px solid var(--green);
+            font-size: 0.9rem;
+            color: var(--text);
+            font-family: monospace;
+        }
+
+        .section-info {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-info h4 {
+            font-size: 0.95rem;
+            color: var(--accent);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .section-info p {
+            font-size: 0.9rem;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--surface);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        thead {
+            background-color: var(--surface2);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: var(--surface2);
+        }
+
+        .code-inline {
+            background-color: var(--surface2);
+            color: var(--yellow);
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            nav {
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .engine-header {
+                flex-direction: column;
+            }
+
+            .engine-meta {
+                grid-template-columns: 1fr;
+            }
+
+            .agent-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    
+/* === NAV OVERRIDE (standardized pill style) === */
+nav { position:sticky; top:0; z-index:100; background:var(--surface); border-bottom:1px solid var(--border); padding:10px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+nav a { color:var(--text2); text-decoration:none; font-size:13px; padding:4px 10px; border-radius:6px; transition:all .2s; white-space:nowrap; }
+nav a:hover, nav a.active { color:var(--text); background:var(--surface2); }
+nav a.brand { color:var(--accent); font-weight:700; font-size:15px; margin-right:12px; }
+
+</style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="brand">CRLD System</a>
+        <a href="philosophy.html">Philosophy</a>
+        <a href="rulebooks.html">Rulebooks</a>
+        <a href="engines.html" class="active">Engines</a>
+        <a href="schemas.html">Schemas</a>
+        <a href="role-agents.html">Role Agents</a>
+        <a href="pipelines.html">Pipelines</a>
+        <a href="skills.html">Skills</a>
+        <a href="artifact-flow.html">Artifact Flow</a>
+        <a href="scoring.html">Scoring</a>
+        <a href="configuration.html">Config</a>
+        <a href="safeguards.html">Safeguards</a>
+        <a href="human-gates.html">Human Gates</a>
+        <a href="evolution.html">Evolution</a>
+        <a href="user-journeys.html">User Journeys</a>
+        <a href="audit.html">Audit</a>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>Layer 02 — Engines</h1>
+            <p>5 engines powering all pipeline operations</p>
+        </div>
+
+        <div class="section-title">Engine Overview</div>
+
+        <div class="section-info">
+            <h4>What are Engines?</h4>
+            <p>Engines define the operational logic for research, review, and build processes. Each engine specifies team composition, agent dispatch protocols, scoring/construction rubrics, and I/O contracts. Engines are consumed by Pipelines (Layer 05), which orchestrate them according to user workflows.</p>
+        </div>
+
+        <div class="engine-grid">
+            <!-- Chapter Research Engine -->
+            <div class="engine-card">
+                <div class="engine-header">
+                    <div class="engine-title">
+                        <h2>Chapter Research Engine</h2>
+                        <div class="engine-file">Chapter_Research_Engine.md</div>
+                    </div>
+                    <span class="tag">Research</span>
+                </div>
+
+                <div class="engine-description">
+                    <h3>Purpose</h3>
+                    <p>Foundation research for chapter architecture. Derives learning objectives, scope variants, pedagogical research, and representation guidance. Produces research-grounded design specifications (IDEAL_BLUEPRINT) for downstream build and review phases.</p>
+                </div>
+
+                <div class="engine-meta">
+                    <div class="meta-block">
+                        <div class="meta-label">Orchestrator</div>
+                        <div class="meta-value">Research Orchestrator</div>
+                    </div>
+                    <div class="meta-block">
+                        <div class="meta-label">Team Size</div>
+                        <div class="meta-value">5 research agents (RA-*)</div>
+                    </div>
+                    <div class="meta-block">
+                        <div class="meta-label">Version</div>
+                        <div class="meta-value">2.1 (BUILD_SPEC removed)</div>
+                    </div>
+                    <div class="meta-block">
+                        <div class="meta-label">Complexity</div>
+                        <div class="meta-value">~22,000 tokens</div>
+                    </div>
+                </div>
+
+                <div class="section-info">
+                    <h4>Research Agent Team</h4>
+                    <ul class="agent-list">
+                        <li class="agent-item">RA-Cur (Curriculum)</li>
+                        <li class="agent-item">RA-Ped (Pedagogical)</li>
+                        <li class="agent-item">RA-Int (Interactive)</li>
+                        <li class="agent-item">RA-Vis (Visual)</li>
+                        <li class="agent-item">RA-Loc (Localization)</li>
+                    </ul>
+                </div>
+
+                <div class="section-info">
+                    <h4>I/O Contract</h4>
+                    <p><strong>Inputs:</strong> Textbook chapter, {{CONFIG: curriculum.min_curricula}}+ curricula docs, reference materials</p>
+                    <p><strong>Outputs:</strong> CHAPTER_BRIEF, CHAPTER_LO_SEQUENCE, per-module {LO_BRIEF, RESEARCH_BRIEF, IDEAL_BLUEPRINT}, KNOWLEDGE_LEDGER</p>
+                </div>
+
+                <div class="section-info">
+                    <h4>Key Features</h4>
+                    <p>Section Index available (independently loadable sections). Curriculum cross-validation protocol. Interactive landscape scanning for applet planning.</p>
+                </div>
+            </div>
+
+            <!-- Module Review Engine -->
+            <div class="engine-card">
+                <div class="engine-header">
+                    <div class="engine-title">
+                        <h2>Module Review Engine</h2>
+                        <div class="engine-file">Module_Review_Engine.md</div>
+                    </div>
+                    <span class="tag">Review</span>
+                </div>
+
+                <div class="engine-description">
+                    <h3>Purpose</h3>
+                    <p>Comprehensive module quality assessment. Coordinates 8 specialist review agents across 12 scoring categories with Tier 1/2 gating. Produces verdict bands (Ship-Ready / Upgradeable / Remediate / Reframe) and defect taxonomy.</p>
+                </div>
+
+                <div class="engine-meta">
+                    <div class="meta-block">
+                        <div class="meta-label">Orchestrator</div>
+                        <div class="meta-value">Review Orchestrator</div>
+                    </div>
+                    <div class="meta-block">
+                        <div class="meta-label">Team Size</div>
+                        <div class="meta-value">8 review agents (Rev-*)</div>
+                    </div>
+                    <div class="meta-block">
+                        <div class="meta-label">Version</div>
+                        <div class="meta-value">2.0 (Canonical)</div>
+                    </div>
+                    <div class="meta-block">
+                        <div class="meta-label">Complexity</div>
+                        <div class="meta-value">~30,000 tokens (most mature)</div>
+                    </div>
+                </div>
+
+                <div class="section-info">
+                    <h4>Review Agent Team</h4>
+                    <ul class="agent-list">
+                        <li class="agent-item">Rev-Ped (Pedagogical)</li>
+                        <li class="agent-item">Rev-Cog (Cognitive)</li>
+                        <li class="agent-item">Rev-ID (Instructional Design)</li>
+                        <li class="agent-item">Rev-ID_Grad (Difficulty Gradient)</li>
+                        <li class="agent-item">Rev-VD (Visual Design)</li>
+                        <li class="agent-item">Rev-Tea (Teacher Support)</li>
+                        <li class="agent-item">Rev-DDD (Digital Delight)</li>
+                        <li class="agent-item">Rev-Loc (Localization)</li>
+                    </ul>
+                </div>
+
+                <div class="section-info">
+                    <h4>Scoring Framework</h4>
+                    <p><strong>12 Categories, 100-point scale:</strong> Pedagogical alignment (A), Coherence (B–E), Visual/Digital (F–J), Cognitive progression (K–V). Tier 1 gates (≥70% per category), overall thresholds (Ship-ready ≥85%, Upgradeable 70–84%, Remediate 50–69%, Reframe &lt;50%).</p>
+                </div>
+
+                <div class="section-info">
+                    <h4>Key Features</h4>
+                    <p>3-tier defect taxonomy. {{new}} §13B Upgrade Map Alternatives. IDEAL_BLUEPRINT update protocol for living artifacts. Section Index available.</p>
+                </div>
+            </div>
+
+            <!-- Module Build Engine -->
+            <div class="engine-card">
+                <div class="engine-header">
+                    <div class="engine-title">
+                        <h2>Module Build Engine</h2>
+                        <div class="engine-file">Module_Build_Engine.md</div>
+                    </div>
+                    <span class="tag">Build</span>
+                </div>
+
+                <div class="engine-description">
+                    <h3>Purpose</h3>
+                    <p>Slide-by-slide module construction. Derives BUILD_SPEC at Phase 0 (v2.1) from IDEAL_BLUEPRINT + RESEARCH_BRIEF. Coordinates 8 build agents across multiple modes (new, source-informed, reviewed rebuild).</p>
+                </div>
+
+                <div class="engine-meta">
+                    <div class="meta-block">
+                        <div class="meta-label">Orchestrator</div>
+                        <div class="meta-value">Build Orchestrator</div>
+                    </div>
+                    <div class="meta-block">
+                        <div class="meta-label">Team Size</div>
+                        <div class="meta-value">8 build agents (Bld-*)</div>
+                    </div>
+                    <div class="meta-block">
+                        <div class="meta-label">Version</div>
+                        <div class="meta-value">2.1 (BUILD_SPEC ownership)</div>
+                    </div>
+                    <div class="meta-block">
+                        <div class="meta-label">Complexity</div>
+                        <div class="meta-value">~13,000 tokens</div>
+                    </div>
+                </div>
+
+                <div class="section-info">
+                    <h4>Build Agent Team</h4>
+                    <ul class="agent-list">
+                        <li class="agent-item">Bld-Ped (Pedagogical)</li>
+                        <li class="agent-item">Bld-Cog (Cognitive)</li>
+                        <li class="agent-item">Bld-ID (Instructional Design)</li>
+                        <li class="agent-item">Bld-ID_Grad (Difficulty Gradient)</li>
+                        <li class="agent-item">Bld-VD (Visual Design)</li>
+                        <li class="agent-item">Bld-Tea (Teacher Facilitation)</li>
+                        <li class="agent-item">Bld-DDD (Digital Delight)</li>
+                        <li class="agent-item">Bld-Loc (Localization)</li>
+                    </ul>
+                </div>
+
+                <div class="section-info">
+                    <h4>Build Modes</h4>
+                    <p><strong>Mode A (New):</strong> Greenfield construction from IDEAL_BLUEPRINT + RESEARCH_BRIEF. <strong>Mode B (Source-Informed):</strong> Reference-based improvement of source PPTX. <strong>Mode C (Reviewed Rebuild):</strong> Post-review remediation using REVIEW_REPORT.</p>
+                </div>
+
+                <div class="section-info">
+                    <h4>Key Features</h4>
+                    <p>BUILD_SPEC derivation at Phase 0 (just-in-time, v2.1). CPA progression validation. Time budget enforcement. .pipeline_workspace/ checkpoint recovery.</p>
+                </div>
+            </div>
+
+            <!-- Applet Build Engine -->
+            <div class="engine-card">
+                <div class="engine-header">
+                    <div class="engine-title">
+                        <h2>Applet Build Engine</h2>
+                        <div class="engine-file">Applet_Build_Engine.md</div>
+                    </div>
+                    <span class="tag">Build</span>
+                </div>
+
+                <div class="engine-description">
+                    <h3>Purpose</h3>
+                    <p>Screen-by-screen interactive storyboard construction. Applets are module assets (Directive 17) invoked as child of Module_Build_Engine or in standalone mode with pre-grounding package (6 required inputs).</p>
+                </div>
+
+                <div class="engine-meta">
+                    <div class="meta-block">
+                        <div class="meta-label">Orchestrator</div>
+                        <div class="meta-value">Build Orchestrator</div>
+                    </div>
+                    <div class="meta-block">
+                        <div class="meta-label">Team Size</div>
+                        <div class="meta-value">8 build agents (Bld-*)</div>
+                    </div>
+                    <div class="meta-block">
+                        <div class="meta-label">Version</div>
+                        <div class="meta-value">2.0 (Foundation)</div>
+                    </div>
+                    <div class="meta-block">
+                        <div class="meta-label">Complexity</div>
+                        <div class="meta-value">~13,000 tokens</div>
+                    </div>
+                </div>
+
+                <div class="section-info">
+                    <h4>Pre-Grounding Package (Standalone)</h4>
+                    <p>6 required inputs: (1) Parent LO_BRIEF, (2) IDEAL_BLUEPRINT § applet, (3) RESEARCH_BRIEF § applet, (4) Knowledge_Ledger, (5) Spine position, (6) Parent module vocabulary state. If missing → HALT with <span class="code-inline">MISSING_INPUT</span> status.</p>
+                </div>
+
+                <div class="section-info">
+                    <h4>Operational Modes</h4>
+                    <p><strong>Standalone:</strong> Independent applet build with pre-grounding validation. <strong>Child:</strong> Invoked by Module_Build_Engine with full module context (BUILD_SPEC § applet passed at Phase 0).</p>
+                </div>
+
+                <div class="section-info">
+                    <h4>Key Features</h4>
+                    <p>BUILD_SPEC § applet derived by Build team (v2.1). Screen-level agent dispatch. IAS/CATF mapping. Module context inheritance in child mode.</p>
+                </div>
+            </div>
+
+            <!-- Applet Review Engine -->
+            <div class="engine-card">
+                <div class="engine-header">
+                    <div class="engine-title">
+                        <h2>Applet Review Engine</h2>
+                        <div class="engine-file">Applet_Review_Engine.md</div>
+                    </div>
+                    <span class="tag">Review</span>
+                </div>
+
+                <div class="engine-description">
+                    <h3>Purpose</h3>
+                    <p>Interactive applet quality assessment at screen level. Scores applets as module components (child mode) or standalone with pre-grounding package. Applet verdicts are integrated or standalone-ready, never fully ship-ready in standalone.</p>
+                </div>
+
+                <div class="engine-meta">
+                    <div class="meta-block">
+                        <div class="meta-label">Orchestrator</div>
+                        <div class="meta-value">Review Orchestrator</div>
+                    </div>
+                    <div class="meta-block">
+                        <div class="meta-label">Team Size</div>
+                        <div class="meta-value">8 review agents (Rev-*)</div>
+                    </div>
+                    <div class="meta-block">
+                        <div class="meta-label">Version</div>
+                        <div class="meta-value">2.0 (Canonical)</div>
+                    </div>
+                    <div class="meta-block">
+                        <div class="meta-label">Complexity</div>
+                        <div class="meta-value">~15,000 tokens</div>
+                    </div>
+                </div>
+
+                <div class="section-info">
+                    <h4>Scoring Framework</h4>
+                    <p><strong>9 categories (Aa-Ha naming):</strong> Applet-applet scoring with Tier 1/2 gating. Same score bands as Module_Review_Engine. In standalone mode, category Ga (module integration) is excluded and weights redistributed.</p>
+                </div>
+
+                <div class="section-info">
+                    <h4>Operational Modes</h4>
+                    <p><strong>Standalone:</strong> Pre-grounding validation required. Excludes integration scoring (Ga). Verdict: "Standalone-ready (module integration pending)". <strong>Child:</strong> Full scoring within module review context. Verdict: full ship-ready/upgradeable/remediate/reframe bands.</p>
+                </div>
+
+                <div class="section-info">
+                    <h4>Key Features</h4>
+                    <p>Parent-child architecture. Applet-specific defect codes. Standalone mode with integration advisory logging (US-29). Section Index available.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">Engine Cross-Reference</div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Engine</th>
+                    <th>Orchestrator</th>
+                    <th>Team</th>
+                    <th>Pipelines</th>
+                    <th>Token Budget</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Chapter_Research_Engine</strong></td>
+                    <td>Research Orchestrator</td>
+                    <td>5 RA-*</td>
+                    <td>P1</td>
+                    <td>~22,000</td>
+                </tr>
+                <tr>
+                    <td><strong>Module_Review_Engine</strong></td>
+                    <td>Review Orchestrator</td>
+                    <td>8 Rev-*</td>
+                    <td>P2, P7 (dispatch per module)</td>
+                    <td>~30,000</td>
+                </tr>
+                <tr>
+                    <td><strong>Module_Build_Engine</strong></td>
+                    <td>Build Orchestrator</td>
+                    <td>8 Bld-*</td>
+                    <td>P3, P8, P9, P10</td>
+                    <td>~13,000</td>
+                </tr>
+                <tr>
+                    <td><strong>Applet_Build_Engine</strong></td>
+                    <td>Build Orchestrator</td>
+                    <td>8 Bld-*</td>
+                    <td>P5 (standalone or child of P3)</td>
+                    <td>~13,000</td>
+                </tr>
+                <tr>
+                    <td><strong>Applet_Review_Engine</strong></td>
+                    <td>Review Orchestrator</td>
+                    <td>8 Rev-*</td>
+                    <td>P6 (standalone or child of P2)</td>
+                    <td>~15,000</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="section-title">Key Design Principles</div>
+
+        <div class="info-grid">
+            <div class="section-info">
+                <h4>Three-Team Model (Canonical)</h4>
+                <p>All engines are operated by one of three teams: Research (RA-*), Review (Rev-*), or Build (Bld-*). Each team has 5–8 specialists. Teams are coordinated by Orchestrators (Layer 04_ROLE_AGENTS).</p>
+            </div>
+
+            <div class="section-info">
+                <h4>Living Artifacts</h4>
+                <p>IDEAL_BLUEPRINT is a living artifact (Directive 22). Rev-* agents can update their owned sections during review. This eliminates re-derivation round-trips and keeps design documents in sync with review findings.</p>
+            </div>
+
+            <div class="section-info">
+                <h4>BUILD_SPEC Derivation (v2.1)</h4>
+                <p>BUILD_SPEC is no longer produced by Chapter_Research_Engine. It is derived just-in-time by Build team at Phase 0 of Module_Build_Engine or Applet_Build_Engine, from IDEAL_BLUEPRINT + RESEARCH_BRIEF (+ REVIEW_REPORT if Mode C).</p>
+            </div>
+
+            <div class="section-info">
+                <h4>Section Index Pattern</h4>
+                <p>Research and Review engines include machine-readable Section Index tables. Orchestrators parse these indices to load only required sections, respecting token budget constraints (§0).</p>
+            </div>
+
+            <div class="section-info">
+                <h4>Applet Pre-Grounding</h4>
+                <p>Standalone applet pipelines (P5, P6) require 6 pre-grounding inputs because applets are module assets. If any input missing → pipeline halts with MISSING_INPUT status (US-23, US-24).</p>
+            </div>
+
+            <div class="section-info">
+                <h4>Completion Thresholds</h4>
+                <p>Each engine specifies completion criteria: {{CONFIG: quality.build_completeness}} (≥95%) or {{CONFIG: quality.build_completeness_with_gap}} (≥85% with gap logged). Thresholds are validated at phase completion gates.</p>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

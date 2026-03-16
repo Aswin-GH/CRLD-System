@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artifact Flow - CRLD System</title>
+    <style>
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface2: #252833;
+            --border: #2e3140;
+            --text: #e2e4e9;
+            --text2: #9ca0ab;
+            --accent: #6c8cff;
+            --green: #4ecdc4;
+            --yellow: #ffd166;
+            --red: #ef6461;
+            --purple: #b07aff;
+            --orange: #ff9f43;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+            backdrop-filter: blur(10px);
+        }
+
+        nav a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        nav a.brand {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 1.1rem;
+            margin-right: auto;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text2);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .flow-diagram {
+            background-color: var(--surface);
+            border: 2px solid var(--accent);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            line-height: 1.8;
+            color: var(--text2);
+        }
+
+        .artifact-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.2s;
+        }
+
+        .artifact-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(108, 140, 255, 0.1);
+        }
+
+        .artifact-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+            font-family: monospace;
+        }
+
+        .artifact-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meta-label {
+            color: var(--text2);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .meta-value {
+            color: var(--text);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tag-research {
+            background-color: rgba(176, 122, 255, 0.2);
+            color: var(--purple);
+        }
+
+        .tag-review {
+            background-color: rgba(108, 140, 255, 0.2);
+            color: var(--accent);
+        }
+
+        .tag-build {
+            background-color: rgba(78, 205, 196, 0.2);
+            color: var(--green);
+        }
+
+        .tag-system {
+            background-color: rgba(255, 159, 67, 0.2);
+            color: var(--orange);
+        }
+
+        .tag-living {
+            background-color: rgba(78, 205, 196, 0.3);
+            color: var(--green);
+            border: 1px solid var(--green);
+        }
+
+        .tag-immutable {
+            background-color: rgba(239, 100, 97, 0.2);
+            color: var(--red);
+            border: 1px solid var(--red);
+        }
+
+        .artifact-color-research {
+            border-left-color: var(--purple);
+        }
+
+        .artifact-color-review {
+            border-left-color: var(--accent);
+        }
+
+        .artifact-color-build {
+            border-left-color: var(--green);
+        }
+
+        .artifact-color-system {
+            border-left-color: var(--orange);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        thead {
+            background-color: var(--surface2);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: var(--surface2);
+        }
+
+        .info-box {
+            background-color: var(--surface);
+            border-left: 3px solid var(--accent);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-box h4 {
+            color: var(--accent);
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .info-box p {
+            color: var(--text);
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .code-inline {
+            background-color: var(--surface2);
+            color: var(--yellow);
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .ownership-block {
+            background-color: var(--surface2);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .ownership-block strong {
+            color: var(--text);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            nav {
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            nav a {
+                font-size: 0.85rem;
+            }
+
+            .artifact-meta {
+                grid-template-columns: 1fr;
+            }
+
+            .flow-diagram {
+                font-size: 0.8rem;
+            }
+        }
+    
+/* === NAV OVERRIDE (standardized pill style) === */
+nav { position:sticky; top:0; z-index:100; background:var(--surface); border-bottom:1px solid var(--border); padding:10px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+nav a { color:var(--text2); text-decoration:none; font-size:13px; padding:4px 10px; border-radius:6px; transition:all .2s; white-space:nowrap; }
+nav a:hover, nav a.active { color:var(--text); background:var(--surface2); }
+nav a.brand { color:var(--accent); font-weight:700; font-size:15px; margin-right:12px; }
+
+</style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="brand">CRLD System</a>
+        <a href="philosophy.html">Philosophy</a>
+        <a href="rulebooks.html">Rulebooks</a>
+        <a href="engines.html">Engines</a>
+        <a href="schemas.html">Schemas</a>
+        <a href="role-agents.html">Role Agents</a>
+        <a href="pipelines.html">Pipelines</a>
+        <a href="skills.html">Skills</a>
+        <a href="artifact-flow.html" class="active">Artifact Flow</a>
+        <a href="scoring.html">Scoring</a>
+        <a href="configuration.html">Config</a>
+        <a href="safeguards.html">Safeguards</a>
+        <a href="human-gates.html">Human Gates</a>
+        <a href="evolution.html">Evolution</a>
+        <a href="user-journeys.html">User Journeys</a>
+        <a href="audit.html">Audit</a>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>Artifact Flow</h1>
+            <p>How content moves through the CRLD pipeline</p>
+        </div>
+
+        <div class="section-title">Pipeline Artifact Flow Diagram</div>
+
+        <div class="flow-diagram">LO_BRIEF → RESEARCH_BRIEF → IDEAL_BLUEPRINT → BUILD_SPEC → MODULE_PPTX
+                        ↕ (living)
+                 REVIEW_REPORT → ANNOTATED_PPTX
+                        ↓
+                 BUILD_LOG → FINAL_MODULE
+        </div>
+
+        <div class="info-box">
+            <h4>Key Concept: Living Artifacts</h4>
+            <p>The IDEAL_BLUEPRINT is a "living artifact" (Directive 22). It is initially created by research agents (RA-*) in P1, then updated by review agents (Rev-*) during P2 review. This eliminates re-derivation round-trips and keeps design documents synchronized with review findings.</p>
+        </div>
+
+        <div class="section-title">Research Artifacts</div>
+
+        <div class="artifact-card artifact-color-research">
+            <div class="artifact-name">LO_BRIEF</div>
+            <div class="artifact-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Generated By</span>
+                    <span class="meta-value"><span class="tag tag-research">RA-Ped (P1 Phase 1c)</span></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Consumed By</span>
+                    <span class="meta-value">P2, P3, P5, P6, P1 sub-research (US-6)</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Mutability</span>
+                    <span class="tag tag-immutable">Immutable</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Purpose</span>
+                    <span class="meta-value">Learning objectives, scope, prerequisites</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="artifact-card artifact-color-research">
+            <div class="artifact-name">RESEARCH_BRIEF</div>
+            <div class="artifact-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Generated By</span>
+                    <span class="meta-value"><span class="tag tag-research">RA-* team (P1 Phase 1f)</span></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Consumed By</span>
+                    <span class="meta-value">P2, P3, P5, P6</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Mutability</span>
+                    <span class="tag tag-immutable">Immutable (D24)</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Purpose</span>
+                    <span class="meta-value">Pedagogical research, representation guidance, misconceptions, evidence</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="artifact-card artifact-color-research">
+            <div class="artifact-name">IDEAL_BLUEPRINT</div>
+            <div class="artifact-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Generated By</span>
+                    <span class="meta-value"><span class="tag tag-research">RA-* team (P1 Phase 4c)</span></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Updated By</span>
+                    <span class="meta-value"><span class="tag tag-review">Rev-* team post-review (P2)</span></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Consumed By</span>
+                    <span class="meta-value">P2, P3, P5, P6, P9, P10</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Mutability</span>
+                    <span class="tag tag-living">Living Artifact (D22)</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Purpose</span>
+                    <span class="meta-value">Slide-by-slide pedagogical design, trope alignment, CPA progression</span>
+                </div>
+            </div>
+            <div class="ownership-block">
+                <strong>Ownership Model:</strong> RA-* team creates the artifact. Each Rev-* agent owns specific categories (e.g., Rev-Ped owns pedagogical sections). After review, Rev-* agents update their sections with findings and recommendations.
+            </div>
+        </div>
+
+        <div class="artifact-card artifact-color-research">
+            <div class="artifact-name">KNOWLEDGE_LEDGER</div>
+            <div class="artifact-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Generated By</span>
+                    <span class="meta-value"><span class="tag tag-research">RA-Ped (P1 Phase 0)</span></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Consumed By</span>
+                    <span class="meta-value">All downstream pipelines (P2, P3, P5, P6)</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Updated By</span>
+                    <span class="meta-value">Bld-* agents during module/applet build</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Purpose</span>
+                    <span class="meta-value">Cumulative student knowledge state, vocabulary tracking, prerequisite continuity</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">Review Artifacts</div>
+
+        <div class="artifact-card artifact-color-review">
+            <div class="artifact-name">REVIEW_REPORT</div>
+            <div class="artifact-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Generated By</span>
+                    <span class="meta-value"><span class="tag tag-review">Rev-* team (P2 Phase 5–6, P6 Phase 5–6)</span></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Consumed By</span>
+                    <span class="meta-value">P3 Mode C, P9 (remediation loop), P10 (reframe loop)</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Format</span>
+                    <span class="meta-value">Markdown (.md) + annotated PPTX</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Purpose</span>
+                    <span class="meta-value">Quality assessment, defect taxonomy, verdict (Ship-ready / Upgradeable / Remediate / Reframe)</span>
+                </div>
+            </div>
+            <div class="ownership-block">
+                <strong>Structure:</strong> §1 Executive summary, §2 Tier 1 gate results, §3–§10 per-category scoring (12 categories), §11 defects organized by severity, §12 recommendations, §13 verdict rationale.
+            </div>
+        </div>
+
+        <div class="artifact-card artifact-color-review">
+            <div class="artifact-name">ANNOTATED_PPTX</div>
+            <div class="artifact-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Generated By</span>
+                    <span class="meta-value"><span class="tag tag-review">Rev-* team during P2 / P6 review</span></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Consumed By</span>
+                    <span class="meta-value">Human reviewers, P3 Mode C builders</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Format</span>
+                    <span class="meta-value">PowerPoint with reviewer comments</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Purpose</span>
+                    <span class="meta-value">Visual presentation of findings, defect locations, suggested improvements</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">Build Artifacts</div>
+
+        <div class="artifact-card artifact-color-build">
+            <div class="artifact-name">BUILD_SPEC</div>
+            <div class="artifact-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Generated By</span>
+                    <span class="meta-value"><span class="tag tag-build">Build team at Phase 0 (v2.1)</span></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Generated In</span>
+                    <span class="meta-value">P3 Phase 0 or P5 Phase 0</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Source Data</span>
+                    <span class="meta-value">IDEAL_BLUEPRINT + RESEARCH_BRIEF (+ REVIEW_REPORT if Mode C)</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Purpose</span>
+                    <span class="meta-value">Slide-by-slide production specification, mode-specific instructions, time budget, CPA targets</span>
+                </div>
+            </div>
+            <div class="ownership-block">
+                <strong>v2.1 Change:</strong> BUILD_SPEC is no longer produced by research phase. It is derived by the Build team just-in-time at Phase 0, allowing mode-specific optimization and incorporation of review findings (if Mode C).
+            </div>
+        </div>
+
+        <div class="artifact-card artifact-color-build">
+            <div class="artifact-name">MODULE_PPTX / APPLET_PPTX</div>
+            <div class="artifact-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Generated By</span>
+                    <span class="meta-value"><span class="tag tag-build">Bld-* team (P3 / P5)</span></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Consumed By</span>
+                    <span class="meta-value">P2 (review), human educators, production systems</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Format</span>
+                    <span class="meta-value">PowerPoint (.pptx), research-informed slides with facilitator notes</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Purpose</span>
+                    <span class="meta-value">Complete pedagogical content, classroom-ready instruction material</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="artifact-card artifact-color-build">
+            <div class="artifact-name">BUILD_LOG</div>
+            <div class="artifact-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Generated By</span>
+                    <span class="meta-value"><span class="tag tag-build">Bld-* team (P3 / P5)</span></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Consumed By</span>
+                    <span class="meta-value">Human reviewers, archival/audit systems</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Format</span>
+                    <span class="meta-value">Markdown (.md)</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Purpose</span>
+                    <span class="meta-value">Build decisions, slide construction notes, gaps logged, time tracking</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">System Artifacts</div>
+
+        <div class="artifact-card artifact-color-system">
+            <div class="artifact-name">PIPELINE_STATE</div>
+            <div class="artifact-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Generated By</span>
+                    <span class="meta-value"><span class="tag tag-system">Orchestrators</span></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Consumed By</span>
+                    <span class="meta-value">All orchestrators (Master, Research, Review, Build)</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Purpose</span>
+                    <span class="meta-value">Tracks execution state, completed phases, HOLD status, resume checkpoint</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Stored In</span>
+                    <span class="meta-value"><span class="code-inline">.pipeline_workspace/</span> directory</span>
+                </div>
+            </div>
+            <div class="ownership-block">
+                <strong>Usage:</strong> When a pipeline pauses (HOLD status), its PIPELINE_STATE is persisted. On resume, orchestrators load PIPELINE_STATE to recover the last completed phase and continue execution.
+            </div>
+        </div>
+
+        <div class="artifact-card artifact-color-system">
+            <div class="artifact-name">AGENT_OUTPUT (NEW)</div>
+            <div class="artifact-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Generated By</span>
+                    <span class="meta-value"><span class="tag tag-system">Individual agents (RA-*, Rev-*, Bld-*)</span></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Purpose</span>
+                    <span class="meta-value">Mid-pipeline checkpoint files, agent completion status, context artifacts</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Stored In</span>
+                    <span class="meta-value"><span class="code-inline">.pipeline_workspace/agents/</span> (per phase)</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Lifetime</span>
+                    <span class="meta-value">Discarded after phase completion (unless errors occur)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">Artifact Lifecycle & Ownership</div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Artifact</th>
+                    <th>Owner (Creates)</th>
+                    <th>Updater (Modifies)</th>
+                    <th>Consumers</th>
+                    <th>Mutability</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>LO_BRIEF</strong></td>
+                    <td><span class="tag tag-research">RA-Ped</span></td>
+                    <td>None</td>
+                    <td>All downstream</td>
+                    <td>Immutable</td>
+                </tr>
+                <tr>
+                    <td><strong>RESEARCH_BRIEF</strong></td>
+                    <td><span class="tag tag-research">RA-*</span></td>
+                    <td>None</td>
+                    <td>All downstream</td>
+                    <td>Immutable (D24)</td>
+                </tr>
+                <tr>
+                    <td><strong>IDEAL_BLUEPRINT</strong></td>
+                    <td><span class="tag tag-research">RA-*</span></td>
+                    <td><span class="tag tag-review">Rev-* (per section)</span></td>
+                    <td>All downstream</td>
+                    <td>Living (D22)</td>
+                </tr>
+                <tr>
+                    <td><strong>BUILD_SPEC</strong></td>
+                    <td><span class="tag tag-build">Build team</span></td>
+                    <td>None</td>
+                    <td><span class="tag tag-build">Build agents</span></td>
+                    <td>Internal only</td>
+                </tr>
+                <tr>
+                    <td><strong>REVIEW_REPORT</strong></td>
+                    <td><span class="tag tag-review">Rev-*</span></td>
+                    <td>None</td>
+                    <td>P3 Mode C, P9, P10</td>
+                    <td>Immutable</td>
+                </tr>
+                <tr>
+                    <td><strong>MODULE_PPTX</strong></td>
+                    <td><span class="tag tag-build">Bld-*</span></td>
+                    <td>None</td>
+                    <td>P2 (review), users</td>
+                    <td>Immutable (shipped)</td>
+                </tr>
+                <tr>
+                    <td><strong>KNOWLEDGE_LEDGER</strong></td>
+                    <td><span class="tag tag-research">RA-Ped</span></td>
+                    <td><span class="tag tag-build">Bld-* (append)</span></td>
+                    <td>All downstream</td>
+                    <td>Append-only</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="section-title">Handoff Protocol</div>
+
+        <div class="info-box">
+            <h4>Cross-Team Handoff Protocol</h4>
+            <p>Research → Review → Build boundaries are defined in <span class="code-inline">Cross_Team_Handoff_Protocol.md</span>. Handoffs include artifact validation gates:</p>
+            <p><strong>Research → Review:</strong> LO_BRIEF + RESEARCH_BRIEF + IDEAL_BLUEPRINT must be present. Human gate approves research artifacts before review can begin.</p>
+            <p><strong>Review → Build:</strong> REVIEW_REPORT verdict determined. IDEAL_BLUEPRINT may be updated by Rev-* agents. Build team derives BUILD_SPEC from IDEAL_BLUEPRINT + RESEARCH_BRIEF (+ REVIEW_REPORT if remediation).</p>
+            <p><strong>Build → Deployment:</strong> MODULE_PPTX + BUILD_LOG produced. Human gate approves built content. Marked for deployment or routed to P9 (remediation) or P10 (reframe).</p>
+        </div>
+
+    </div>
+</body>
+</html>

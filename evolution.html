@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Evolution — CRLD System</title>
+    <style>
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface2: #252833;
+            --border: #2e3140;
+            --text: #e2e4e9;
+            --text2: #9ca0ab;
+            --accent: #6c8cff;
+            --green: #4ecdc4;
+            --yellow: #ffd166;
+            --red: #ef6461;
+            --purple: #b07aff;
+            --orange: #ff9f43;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 2rem;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        nav a {
+            color: var(--text2);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.95rem;
+        }
+
+        nav a.brand {
+            color: var(--accent);
+            font-weight: 600;
+            margin-right: 1rem;
+        }
+
+        nav a:hover {
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text2);
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section h3 {
+            font-size: 1.3rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 8px 24px rgba(108, 140, 255, 0.15);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 0.75rem;
+        }
+
+        .card-content {
+            font-size: 0.95rem;
+            color: var(--text2);
+            line-height: 1.6;
+        }
+
+        .card-stat {
+            font-size: 0.9rem;
+            color: var(--text2);
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .stat-value {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .flow-diagram {
+            background-color: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+            font-size: 0.95rem;
+            color: var(--text2);
+            font-family: monospace;
+            overflow-x: auto;
+        }
+
+        .flow-step {
+            display: inline-block;
+            background-color: var(--surface);
+            border: 1px solid var(--accent);
+            padding: 0.75rem 1.25rem;
+            border-radius: 4px;
+            margin: 0 0.5rem 1rem 0;
+            color: var(--accent);
+        }
+
+        .flow-arrow {
+            display: inline-block;
+            color: var(--text2);
+            margin: 0 0.5rem;
+            vertical-align: middle;
+        }
+
+        .decision-list {
+            background-color: var(--surface2);
+            border-left: 3px solid var(--yellow);
+            border-radius: 4px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .decision-item {
+            margin-bottom: 1rem;
+        }
+
+        .decision-label {
+            color: var(--yellow);
+            font-weight: 600;
+        }
+
+        .decision-desc {
+            color: var(--text2);
+            margin-top: 0.25rem;
+        }
+
+        .schema-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .schema-list li {
+            padding: 0.75rem;
+            background-color: var(--surface2);
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+            border-left: 3px solid var(--green);
+            color: var(--text2);
+        }
+
+        .schema-list li strong {
+            color: var(--green);
+        }
+
+        .governance-box {
+            background-color: rgba(176, 122, 255, 0.05);
+            border: 1px solid var(--purple);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .governance-box h4 {
+            color: var(--purple);
+            margin-bottom: 1rem;
+        }
+
+        .maintenance-note {
+            background-color: rgba(255, 209, 102, 0.05);
+            border: 1px solid var(--yellow);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .maintenance-note h4 {
+            color: var(--yellow);
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text2);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+    
+/* === NAV OVERRIDE (standardized pill style) === */
+nav { position:sticky; top:0; z-index:100; background:var(--surface); border-bottom:1px solid var(--border); padding:10px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+nav a { color:var(--text2); text-decoration:none; font-size:13px; padding:4px 10px; border-radius:6px; transition:all .2s; white-space:nowrap; }
+nav a:hover, nav a.active { color:var(--text); background:var(--surface2); }
+nav a.brand { color:var(--accent); font-weight:700; font-size:15px; margin-right:12px; }
+
+</style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="brand">CRLD System</a>
+        <a href="philosophy.html">Philosophy</a>
+        <a href="rulebooks.html">Rulebooks</a>
+        <a href="engines.html">Engines</a>
+        <a href="schemas.html">Schemas</a>
+        <a href="role-agents.html">Role Agents</a>
+        <a href="pipelines.html">Pipelines</a>
+        <a href="skills.html">Skills</a>
+        <a href="artifact-flow.html">Artifact Flow</a>
+        <a href="scoring.html">Scoring</a>
+        <a href="configuration.html">Config</a>
+        <a href="safeguards.html">Safeguards</a>
+        <a href="human-gates.html">Human Gates</a>
+        <a href="evolution.html" class="active">Evolution</a>
+        <a href="user-journeys.html">User Journeys</a>
+        <a href="audit.html">Audit</a>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>System Evolution</h1>
+            <p>How CRLD learns and improves itself</p>
+        </div>
+
+        <div class="section">
+            <h2>Evolver Architecture</h2>
+
+            <div class="grid">
+                <div class="card">
+                    <div class="card-title">Evolver Orchestrator</div>
+                    <div class="card-content">
+                        Central learning entity that accumulates observations from all three pipelines (Research, Review, Build). Detects patterns in findings and synthesizes change proposals for human validation.
+                    </div>
+                    <div class="card-stat">
+                        <strong>742 lines</strong> — 8 phase functions · Cross-team visibility
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Gate 1: Technical Review</div>
+                    <div class="card-content">
+                        Automated validation of change proposal logic. Questions: Does this change break any pipeline logic? Are consumers properly identified? Is the impact isolated or system-wide?
+                    </div>
+                    <div class="card-stat">
+                        Technical soundness checkpoint
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Gate 2: Human Approval</div>
+                    <div class="card-content">
+                        Final decision point where human validates change proposal before committing to system files. Human reviews evidence and decides whether change is truly warranted.
+                    </div>
+                    <div class="card-stat">
+                        Human sign-off required for all system changes
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">CHANGELOG Commit</div>
+                    <div class="card-content">
+                        All approved changes logged in REVIEW_SYSTEM_CHANGELOG with evidence, change author (Evolver), and human approver attribution. System files updated with new values.
+                    </div>
+                    <div class="card-stat">
+                        Full traceability of all system amendments
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-diagram">
+Review findings → PENDING_LEARNINGS → CHANGE_PROPOSAL → Gate 1 → Gate 2 → CHANGELOG → System update
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Evolver Schemas</h2>
+            <p>4 schemas support the Evolver's accumulation-to-approval lifecycle:</p>
+
+            <ul class="schema-list">
+                <li><strong>PENDING_LEARNINGS_Schema.md</strong> — Buffer for agent observations. Stores findings from Phase 2 (Accumulation_Monitor) before pattern detection.</li>
+                <li><strong>CHANGE_PROPOSAL_Schema.md</strong> — Proposal format. Contains what changed, why, evidence, consumers affected, and proposed new values.</li>
+                <li><strong>DEBATE_LOG_Schema.md</strong> — Human-agent interactions. Records when humans override automated decisions, approve/reject findings, or provide preference signals.</li>
+                <li><strong>REVIEW_SYSTEM_CHANGELOG_Schema.md</strong> — Authoritative record of all system amendments. Entry per approved change with before/after values, approver ID, timestamp.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Governance Template</h2>
+            <p>All 22 agent and orchestrator files in Layer 04 reference the <strong>Evolver_Governance_Template.md</strong> for standard governance language:</p>
+
+            <div class="governance-box">
+                <h4>Standard Governance Statement</h4>
+                <p style="color: var(--text2); margin-bottom: 1rem;">This agent/orchestrator definition is evolvable through the standard Gate 1 → Gate 2 change proposal process (Directive 1). The Evolver does not modify agent files directly — it holds proposals in PENDING_LEARNINGS for human-validated synthesis.</p>
+                <p style="color: var(--text2); font-size: 0.9rem;"><strong>Key Rules:</strong></p>
+                <ol style="color: var(--text2); margin-left: 1.5rem; font-size: 0.9rem;">
+                    <li>No direct modification — Evolver proposes; humans approve and apply</li>
+                    <li>Gate 1 → Gate 2 process — Two-stage validation protocol</li>
+                    <li>PENDING_LEARNINGS buffer — Holds proposals until synthesis</li>
+                    <li>Human-validated synthesis — No changes applied without human review</li>
+                    <li>Source traceability — Each change includes trigger event and proposed modification</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Locked Design Decisions</h2>
+            <p>These design decisions are foundational and require Evolver + human consensus to change:</p>
+
+            <div class="decision-list">
+                <div class="decision-item">
+                    <div class="decision-label">D22: IDEAL_BLUEPRINT is living</div>
+                    <div class="decision-desc">IDEAL_BLUEPRINT is not frozen at research end — it evolves during review and build as agent findings refine the design vision.</div>
+                </div>
+
+                <div class="decision-item">
+                    <div class="decision-label">D27: Pipeline Authority</div>
+                    <div class="decision-desc">Pipeline specifications in Layer 05 are the authoritative execution source. Skills (Layer 06) reference these specs; they do not redefine pipeline logic.</div>
+                </div>
+
+                <div class="decision-item">
+                    <div class="decision-label">D28: Dual Output (md + annotated PPTX)</div>
+                    <div class="decision-desc">Review agents produce both markdown REVIEW_REPORT and annotated PPTX. Both outputs ship to user for integrated feedback.</div>
+                </div>
+
+                <div class="decision-item">
+                    <div class="decision-label">D29: Config Centralization</div>
+                    <div class="decision-desc">All numeric thresholds, limits, and behavioral switches centralized in System_Configuration.md. No hard-coded values in pipelines or agents.</div>
+                </div>
+
+                <div class="decision-item">
+                    <div class="decision-label">D31: P4 → P3 Mode C</div>
+                    <div class="decision-desc">P4 (fast-track) is not a separate pipeline — it is Mode C of P3 with reduced constraint set. User-facing alias only.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Maintenance Layer (08)</h2>
+
+            <div class="maintenance-note">
+                <h4>Current Status: 1 Stub File</h4>
+                <p style="color: var(--text2); margin-bottom: 1rem;">The <strong>evolver-skill-stub.md</strong> defines the future <code>evolver</code> skill (SK-DEF-1), deferred to maintenance layer until P11 pipeline is built.</p>
+                <p style="color: var(--text2); margin-bottom: 1rem;"><strong>Why deferred?</strong> P11 follows fundamentally different lifecycle than content pipelines:</p>
+                <ul style="color: var(--text2); margin-left: 1.5rem; font-size: 0.95rem;">
+                    <li>Async (not user-triggered in real-time)</li>
+                    <li>Accumulation-triggered (fires when PENDING_LEARNINGS reaches threshold)</li>
+                    <li>System-modifying (proposes changes to rules, schemas, templates)</li>
+                    <li>Requires Gate 1 → Gate 2 change proposal process</li>
+                </ul>
+            </div>
+
+            <h3>When Built, P11 Will Support:</h3>
+            <ul class="schema-list">
+                <li><strong>US-25</strong> — Research gap: Update research after review reveals incomplete artifacts</li>
+                <li><strong>US-30</strong> — Misconception gap update: Evolve rulebooks based on repeated review findings</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Evolution Cycle Flow</h2>
+
+            <div style="background-color: var(--surface2); border-radius: 8px; padding: 2rem; margin: 2rem 0;">
+                <p style="color: var(--text2); margin-bottom: 1.5rem; font-weight: 600;">1. Agent Observation (All pipelines)</p>
+                <p style="color: var(--text2); margin-bottom: 2rem; margin-left: 1rem;">Agents flag findings in REVIEW_REPORT §6 (review agents) or BUILD_LOG §7 (build agents). Examples: rule gaps, threshold misalignment, schema gaps, scope conflicts.</p>
+
+                <p style="color: var(--text2); margin-bottom: 1.5rem; font-weight: 600;">2. Accumulation (Evolver Phase 1)</p>
+                <p style="color: var(--text2); margin-bottom: 2rem; margin-left: 1rem;">Evolver loads PENDING_LEARNINGS on every cycle. Validates entry format, organizes by source team and finding type, queues valid entries for pattern detection.</p>
+
+                <p style="color: var(--text2); margin-bottom: 1.5rem; font-weight: 600;">3. Pattern Detection (Evolver Phase 2)</p>
+                <p style="color: var(--text2); margin-bottom: 2rem; margin-left: 1rem;">Detects recurring themes across multiple entries. Example: If 5 reviews flag the same rule gap, pattern emerges and proposal synthesis begins.</p>
+
+                <p style="color: var(--text2); margin-bottom: 1.5rem; font-weight: 600;">4. Proposal Generation (Evolver Phase 3)</p>
+                <p style="color: var(--text2); margin-bottom: 2rem; margin-left: 1rem;">Creates CHANGE_PROPOSAL with evidence, impact analysis, and proposed new values. Identifies all consumers of the parameter.</p>
+
+                <p style="color: var(--text2); margin-bottom: 1.5rem; font-weight: 600;">5. Human Decision (Gate 1 + Gate 2)</p>
+                <p style="color: var(--text2); margin-bottom: 2rem; margin-left: 1rem;">Technical review (Gate 1) then human approval (Gate 2). Human can APPROVE, REQUEST_REVISIONS, or REJECT proposal.</p>
+
+                <p style="color: var(--text2); margin-bottom: 1rem; font-weight: 600;">6. System Update (CHANGELOG commit)</p>
+                <p style="color: var(--text2); margin-left: 1rem;">Approved change committed to System_Configuration.md, rulebook, or schema file. Logged in REVIEW_SYSTEM_CHANGELOG with full attribution.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Key Principle</h2>
+            <p style="font-size: 1.05rem; color: var(--text); background-color: var(--surface); border-left: 4px solid var(--accent); padding: 1.5rem; border-radius: 4px;">
+                <strong>The Evolver PROPOSES changes; humans DECIDE whether to commit them.</strong> The Evolver never modifies system files directly. All changes are logged in REVIEW_SYSTEM_CHANGELOG with evidence and human approver attribution.
+            </p>
+        </div>
+    </div>
+
+    <footer>
+        <p>CRLD System Documentation — System Evolution</p>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem;">Last updated 2026-03-15</p>
+    </footer>
+</body>
+</html>
