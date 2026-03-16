@@ -1529,6 +1529,7 @@
         <li><strong>Forward-reference only:</strong> Skills reference Layers 00–05 (pipeline definitions, engines, schemas, role agents, artifact flow, scoring). No back-references from pipelines to skills.</li>
         <li><strong>Deferred:</strong> <code>evolver</code> skill (P11, in 08_MAINTENANCE) — future enhancement for pipeline adaptation</li>
         <li><strong>Pre-Flight Pattern:</strong> All skills pause at entry, collect required context via clarifying questions, then proceed with full pipeline invocation</li>
+        <li><strong>Folder Input Check (§16.1):</strong> All skill pre-flights now validate required project folders exist before pipeline invocation — <code>{{CONFIG: paths.textbooks}}</code>, <code>{{CONFIG: paths.curricula}}</code>, <code>{{CONFIG: paths.chapters}}</code> checked per pipeline type. On failure → user-facing remediation message with specific missing path.</li>
         <li><strong>Trigger Matching:</strong> Phrase-based detection using fuzzy matching on trigger command strings</li>
       </ul>
     </section>

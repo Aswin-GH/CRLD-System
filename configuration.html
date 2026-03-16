@@ -328,7 +328,7 @@ nav a.brand { color:var(--accent); font-weight:700; font-size:15px; margin-right
     <div class="page-header">
       <h1>System Configuration</h1>
       <p>Single Source of Truth for all CRLD System Parameters</p>
-      <p style="margin-top: 0.5rem; color: var(--text2); font-size: 0.95rem;">17 sections, 30+ CONFIG keys, all numeric thresholds and behavioral switches centralized in one document</p>
+      <p style="margin-top: 0.5rem; color: var(--text2); font-size: 0.95rem;">18 sections, 40+ CONFIG keys, all numeric thresholds, behavioral switches, and project paths centralized in one document</p>
     </div>
 
     <div class="search-box">
@@ -368,7 +368,7 @@ nav a.brand { color:var(--accent); font-weight:700; font-size:15px; margin-right
       </div>
     </div>
 
-    <h2>All 17 Sections</h2>
+    <h2>All 18 Sections</h2>
     <div class="section-grid" id="sectionGrid">
       <div class="config-card">
         <div class="config-card-header">
@@ -933,7 +933,130 @@ nav a.brand { color:var(--accent); font-weight:700; font-size:15px; margin-right
 
       <div class="config-card">
         <div class="config-card-header">
-          <div class="section-num">§16</div>
+          <div class="section-num badge">§15.1</div>
+          <h3>Selective Module Dispatch <span class="badge">NEW</span></h3>
+          <div class="subtitle">Research selected modules after chapter planning is complete (US-32)</div>
+        </div>
+        <div class="config-card-content">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Key</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Selective dispatch</td>
+                <td><code>research.selective_module_dispatch</code></td>
+                <td>true</td>
+              </tr>
+              <tr>
+                <td>Validate prerequisites</td>
+                <td><code>research.validate_module_prerequisites</code></td>
+                <td>true</td>
+              </tr>
+              <tr>
+                <td>Phase 4 merge check</td>
+                <td><code>quality.selective_phase4_merge_check</code></td>
+                <td>true</td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="font-size: 0.85rem; color: var(--text2); margin-top: 1rem;">Enables Phase 4 research for selected modules when Phases 1–3 are complete. Prerequisite modules must have COMPLETE research artifacts.</p>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num badge">§16</div>
+          <h3>Project Paths & Folder Structure <span class="badge">NEW</span></h3>
+          <div class="subtitle">Project data lives OUTSIDE CRLD_SYSTEM</div>
+        </div>
+        <div class="config-card-content">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Key</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Project root</td>
+                <td><code>paths.project_root</code></td>
+                <td>../PROJECTS</td>
+              </tr>
+              <tr>
+                <td>Textbooks folder</td>
+                <td><code>paths.textbooks</code></td>
+                <td>{{project_root}}/TEXTBOOKS</td>
+              </tr>
+              <tr>
+                <td>Curricula folder</td>
+                <td><code>paths.curricula</code></td>
+                <td>{{project_root}}/CURRICULA</td>
+              </tr>
+              <tr>
+                <td>Chapters folder</td>
+                <td><code>paths.chapters</code></td>
+                <td>{{project_root}}/CHAPTERS</td>
+              </tr>
+              <tr>
+                <td>Chapter workspace</td>
+                <td><code>paths.chapter_workspace</code></td>
+                <td>G{grade}_C{chapter}_{Topic}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="note-box" style="margin-top: 1rem;">
+            <strong>Separation principle:</strong> CRLD_SYSTEM is the system definition (read-only at runtime). Project data lives at <code>{{paths.project_root}}</code>. This enables version-controlling the system independently of project data.
+          </div>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num badge">§16.1</div>
+          <h3>Pre-Flight Folder Validation <span class="badge">NEW</span></h3>
+          <div class="subtitle">Validates folder structure before pipeline execution</div>
+        </div>
+        <div class="config-card-content">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Pipeline</th>
+                <th>Required Folders</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>P1 (Research)</td>
+                <td><code>textbooks</code> readable, <code>curricula</code> readable, <code>chapters</code> writable</td>
+              </tr>
+              <tr>
+                <td>P1 (Selective)</td>
+                <td><code>chapters/[id]</code> with Phase 1–3 artifacts</td>
+              </tr>
+              <tr>
+                <td>P2 (Review)</td>
+                <td><code>chapters/[id]</code> with module PPTX + research artifacts</td>
+              </tr>
+              <tr>
+                <td>P3 (Build)</td>
+                <td><code>chapters/[id]</code> with research + review artifacts</td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="font-size: 0.85rem; color: var(--text2); margin-top: 1rem;">Runs in Master_Orchestrator Phase 1b. On failure → COMPLETION_GAP_REPORT with specific missing path and remediation message.</p>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-card-header">
+          <div class="section-num">§17</div>
           <h3>Configuration Change Protocol</h3>
           <div class="subtitle">Governance for parameter updates</div>
         </div>
@@ -953,7 +1076,7 @@ nav a.brand { color:var(--accent); font-weight:700; font-size:15px; margin-right
 
       <div class="config-card">
         <div class="config-card-header">
-          <div class="section-num">§17</div>
+          <div class="section-num">§18</div>
           <h3>Cross-Document References</h3>
           <div class="subtitle">Links to consumer documentation</div>
         </div>
@@ -974,8 +1097,8 @@ nav a.brand { color:var(--accent); font-weight:700; font-size:15px; margin-right
     </div>
 
     <div style="margin-top: 3rem; padding: 1.5rem; background: var(--surface); border-left: 3px solid var(--accent); border-radius: 4px;">
-      <p><strong>Document Version:</strong> 1.1 — Added §13 (Pre-Flight Validation), §14 (Upgrade Map Alternatives), §15 (Pipeline Workspace)</p>
-      <p style="margin-top: 0.5rem;"><strong>Last Updated:</strong> 2026-03-16 | All defaults reflect values from sessions 1–6 (not changed, only centralized)</p>
+      <p><strong>Document Version:</strong> 1.3 — Added §15.1 (Selective Module Dispatch), §16 (Project Paths), §16.1 (Pre-Flight Folder Validation); renumbered §16→§17, §17→§18</p>
+      <p style="margin-top: 0.5rem;"><strong>Last Updated:</strong> 2026-03-16 | 18 sections, 40+ CONFIG keys</p>
     </div>
   </main>
 
